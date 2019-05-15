@@ -1,0 +1,67 @@
+@import '~@angular/material/theming';
+
+
+// Include non-theme styles for core.
+@include mat-core();
+
+// Define a theme.
+$primary: mat-palette($mat-indigo);
+$accent:  mat-palette($mat-pink, A200, A100, A400);
+
+$theme: mat-light-theme($primary, $accent);
+
+// Include all theme styles for the components.
+@include angular-material-theme($theme);
+
+/*** Variables ***/
+
+
+
+/*** Mixins ***/
+
+@mixin primary-color($theme) {
+  $primary: map-get($theme, primary);
+}
+
+@mixin secondary-color($theme) {
+  $accent: map-get($theme, accent);
+}
+
+@mixin transition($duration) {
+  -webkit-transition: $duration;
+  -moz-transition: $duration;
+  -ms-transition: $duration;
+  -o-transition: $duration;
+  transition: $duration;
+}
+
+@mixin box-shadow($px, $px2, $color) {
+  box-shadow: $px $px $px2 $color;
+  -moz-box-shadow: $px $px $px2 $color;
+  -webkit-box-shadow: $px $px $px2 $color;
+  -o-box-shadow: $px $px $px2 $color;
+}
+
+@mixin text-shadow($px, $px2, $color) {
+  text-shadow: $px $px $px2 $color;
+  -moz-text-shadow: $px $px $px2 $color;
+  -webkit-text-shadow: $px $px $px2 $color;
+  -o-text-shadow: $px $px $px2 $color;
+}
+
+@mixin border-radius($radius) {
+  border-radius: $radius;
+  -webkit-border-radius: $radius;
+  -moz-border-radius: $radius;
+}
+
+/*** Media Query Breakpoints ***/
+$smBreakpoint: 767px;
+$xsBreakpoint: 467px;
+
+/*** Global Styles ***/
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
