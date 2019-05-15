@@ -11,6 +11,8 @@ export class MockBuilderService {
   buildMock(originalObj: object): object {
     console.log('originalObj', originalObj);
     const mockedObject = {};
+    const objIsArray = originalObj instanceof Array;
+
     // Loop through each key in the object
     for (const prop in originalObj) {
       if (originalObj.hasOwnProperty(prop)) {
@@ -36,14 +38,14 @@ export class MockBuilderService {
           }
         } else {
           console.log('INNER OBJECT', originalObj[prop]);
-          // If the value is an object, call self recursively
-          this.buildMock(originalObj[prop]);
+          // If the value is an object, call recursively
+          mockedObject[prop] = this.buildMock(originalObj[prop]);
         }
       }
     }
 
-    // Return completed mock response
-    return mockedObject;
+    // Check if the obj passed in was an Array or Object and return Mock
+    return objIsArray ? Object.values(mockedObject) : mockedObject;
   }
 
   mockString(inputString: string): string {
@@ -61,7 +63,7 @@ export class MockBuilderService {
 
   processString(inputString: string) {
     // Check if its a date
-    if (!isNaN(new Date(inputString).getTime())) {
+    if (inputString.length > 5 && inputString.indexOf(':') !== -1 && !isNaN(new Date(inputString).getTime())) {
       return faker.date.past().toISOString();
     } else if (inputString.match(/([a-f\d]{8}(-[a-f\d]{4}){3}-[a-f\d]{12}?)/i)) {
       // Check if its a guid
