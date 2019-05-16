@@ -11,39 +11,49 @@ export class MockBuilderContainerComponent implements OnInit {
 
   @Input() sourceResponse: HttpResponse<object>;
   mockedRespBody: object;
+  mockedRespBodyString: string;
+  sourceObject: string;
 
   constructor(private mockBuilderService: MockBuilderService) { }
 
   ngOnInit() {
-    const test = {
-      foo: 'bar',
-      hey: 'This is secret!',
-      stuff: 44,
-      isIt: false,
-      date: '2019-05-15T04:41:37.944Z',
-      id: '123e4567-e89b-12d3-a456-426655440000',
-      inner: {
-        another: 'something',
-        goes: 234,
-        here: true,
-        innerInnerArr: [
-            543,
-            92,
-            'sdfasdfas',
-            true,
-            '123e4567-e89b-12d3-a456-426655440000'
-        ]
-      },
-      arr: [
-          'abc',
-          '123',
-          'zyx',
-          543
-      ]
-    };
-    console.log('test', test);
-    this.mockedRespBody = this.mockBuilderService.buildMock(test);
-    console.log('mockedRespBody', this.mockedRespBody);
+    // const test = {
+    //   foo: 'bar',
+    //   hey: 'This is secret!',
+    //   stuff: 44,
+    //   isIt: false,
+    //   date: '2019-05-15T04:41:37.944Z',
+    //   id: '123e4567-e89b-12d3-a456-426655440000',
+    //   inner: {
+    //     another: 'something',
+    //     goes: 234,
+    //     here: true,
+    //     innerInnerArr: [
+    //         543,
+    //         92,
+    //         'sdfasdfas',
+    //         true,
+    //         '123e4567-e89b-12d3-a456-426655440000'
+    //     ]
+    //   },
+    //   arr: [
+    //       'abc',
+    //       '123',
+    //       'zyx',
+    //       543
+    //   ]
+    // };
+    // console.log('test', test);
+    // this.mockedRespBody = this.mockBuilderService.buildMock(test);
+    // this.mockedRespBodyString = JSON.stringify(this.mockedRespBody);
+    //
+    // console.log('mockedRespBody', this.mockedRespBody);
+  }
+
+  genMockedObject() {
+      this.mockedRespBody = this.mockBuilderService.buildMock(JSON.parse(this.sourceObject));
+      console.log('mockedRespBody', this.mockedRespBody);
+      this.mockedRespBodyString = JSON.stringify(this.mockedRespBody);
   }
 
 }

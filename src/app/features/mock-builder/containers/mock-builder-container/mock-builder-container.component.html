@@ -1,3 +1,16 @@
-<p>
-  mock-builder-container works!
-</p>
+<h2>Mock Generator</h2>
+<form>
+  <textarea name="input-obj" [(ngModel)]="sourceObject"></textarea>
+</form>
+<button (click)="genMockedObject()">Generate Mock</button>
+<div #btnContainer>
+  <button mat-raised-button
+          ngxClipboard
+          [cbContent]="mockedRespBodyString"
+          [container]="btnContainer">
+    Copy
+  </button>
+</div>
+<code class="req-body-output">
+  <pre>{{mockedRespBody | json}}</pre>
+</code>
