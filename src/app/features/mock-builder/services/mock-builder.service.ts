@@ -58,7 +58,7 @@ export class MockBuilderService {
       mockedVal = this.rebuildStringWithBreaks(inputString, '/', preserveTypes);
     } else {
       // Mock strings with no spaces
-      mockedVal = faker.random.alphaNumeric(inputString.length);
+      mockedVal = preserveTypes ? this.replaceCharTypes(inputString) : faker.random.alphaNumeric(inputString.length);
     }
     return mockedVal;
   }
