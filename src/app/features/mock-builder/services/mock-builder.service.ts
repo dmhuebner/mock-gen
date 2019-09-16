@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as faker from 'faker';
+import { LETTERS, NUMBERS } from '../constants/available-characters.constant';
 
 @Injectable({
   providedIn: 'root'
@@ -8,7 +9,8 @@ export class MockBuilderService {
 
   constructor() { }
 
-  buildMock(originalObj: object): object {
+  // TODO make interface for settings
+  buildMock(originalObj: object, settings?: any): object {
     const mockedObject = {};
     const objIsArray = originalObj instanceof Array;
 
@@ -20,7 +22,9 @@ export class MockBuilderService {
           // Check value type and limits while building mockedObject
           switch (typeof(originalObj[prop])) {
             case 'string':
-              mockedObject[prop] = this.processString(originalObj[prop]);
+              // preserveTypes setting for strings is designed to preserve letters or numbers in the output mocked string
+              const preserveTypes = settings ? settings.strings.preserveTypes : true;
+              mockedObject[prop] = this.processString(originalObj[prop], preserveTypes);
               break;
             case 'number':
               mockedObject[prop] = faker.random.number(originalObj[prop]);
@@ -30,6 +34,7 @@ export class MockBuilderService {
               break;
             default:
               // Some default
+              mockedObject[prop] = 'COULD_NOT_MOCK';
           }
         } else {
           // If the value is an object, call recursively
@@ -42,15 +47,15 @@ export class MockBuilderService {
     return objIsArray ? Object.values(mockedObject) : mockedObject;
   }
 
-  mockString(inputString: string): string {
+  mockString(inputString: string, preserveTypes: boolean): string {
     let mockedVal;
     // randomize sentences
     if (inputString.indexOf(' ') > -1) {
       // Rebuild and randomize sentences with space breaks
-      mockedVal = this.rebuildStringWithBreaks(inputString, ' ');
+      mockedVal = this.rebuildStringWithBreaks(inputString, ' ', preserveTypes);
     } else if (inputString.indexOf('/') > -1) {
       // Rebuild and randomize string path with '/'
-      mockedVal = this.rebuildStringWithBreaks(inputString, '/');
+      mockedVal = this.rebuildStringWithBreaks(inputString, '/', preserveTypes);
     } else {
       // Mock strings with no spaces
       mockedVal = faker.random.alphaNumeric(inputString.length);
@@ -58,7 +63,7 @@ export class MockBuilderService {
     return mockedVal;
   }
 
-  processString(inputString: string) {
+  processString(inputString: string, preserveTypes: boolean) {
     // Check if its a date
     if (inputString.length > 5 && inputString.indexOf(':') !== -1 && !isNaN(new Date(inputString).getTime())) {
       return faker.date.past().toISOString();
@@ -67,13 +72,27 @@ export class MockBuilderService {
       return faker.random.uuid();
     } else {
       // else its a word or sentence...
-      return this.mockString(inputString);
+      return this.mockString(inputString, preserveTypes);
     }
   }
 
   // Breaks down and mocks a string while preserving any breaking characters that you want to preserve (good for sentences or paths)
-  private rebuildStringWithBreaks(inputString: string, breakingChar: string): string {
+  private rebuildStringWithBreaks(inputString: string, breakingChar: string, preserveTypes: boolean = true): string {
     const stringArray = inputString.split(breakingChar);
-    return stringArray.map(word => faker.random.alphaNumeric(word.length)).join(breakingChar);
+    if (preserveTypes) {
+      return stringArray.map(word => this.replaceCharTypes(word)).join(breakingChar);
+    } else {
+      return stringArray.map(word => faker.random.alphaNumeric(word.length)).join(breakingChar);
+    }
+  }
+
+  private replaceCharTypes(inputString: string): string {
+    return inputString.split('').map((char) => {
+      if (isNaN(Number(char))) {
+        return LETTERS[Math.floor(Math.random() * 25)];
+      } else {
+        return NUMBERS[Math.floor(Math.random() * 9)];
+      }
+    }).join('');
   }
 }
