@@ -1,7 +1,35 @@
-.req-body-output {
-  pre {
-    padding: 1rem;
-    background-color: #333;
-    color: #fff;
+.mock-gen-container {
+  .header {
+    text-align: center;
   }
+  .mock-form {
+    .mat-form-field {
+      width: 100%;
+    }
+  }
+
+  div.mock-btn-container {
+    display: flex;
+    justify-content: space-between;
+
+    .mock-source-btns {
+      button  {
+        margin-right: 1rem;
+      }
+    }
+  }
+
+  .req-body-output {
+    pre {
+      padding: 1rem;
+      background-color: #333;
+      color: #fff;
+    }
+  }
+
+  .bottom-btns {
+    display: flex;
+    justify-content: flex-end;
+  }
+
 }

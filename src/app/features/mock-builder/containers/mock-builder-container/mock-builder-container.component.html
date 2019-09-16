@@ -1,16 +1,55 @@
-<h2>Mock Generator</h2>
-<form>
-  <textarea name="input-obj" [(ngModel)]="sourceObject"></textarea>
-</form>
-<button (click)="genMockedObject()">Generate Mock</button>
-<div #btnContainer>
-  <button mat-raised-button
-          ngxClipboard
-          [cbContent]="mockedRespBodyString"
-          [container]="btnContainer">
-    Copy
-  </button>
+<div class="mock-gen-container">
+  <h2 class="header">Mock Generator</h2>
+  <form class="mock-form">
+    <mat-form-field>
+      <mat-label>Source to Mock</mat-label>
+      <textarea rows="8"
+              class="input-object"
+              matInput
+              placeholder="Paste in content to mock"
+              name="input-obj"
+              [(ngModel)]="sourceObject">
+  </textarea>
+    </mat-form-field>
+  </form>
+  <div class="mock-btn-container" #btnContainer>
+    <div class="mock-source-btns">
+      <button mat-raised-button
+              color="primary"
+              (click)="genMockedObject()">
+        Generate Mock
+      </button>
+      <button mat-raised-button
+              color="secondary"
+              (click)="resetObjectToMock()">
+        Reset
+      </button>
+    </div>
+    <button *ngIf="mockedRespBody"
+            mat-raised-button
+            color="accent"
+            class="copy-mock-btn"
+            ngxClipboard
+            [cbContent]="mockedRespBodyString"
+            [container]="btnContainer">
+      <mat-icon aria-hidden="false" aria-label="Copy">content_copy</mat-icon>
+      Copy to Clipboard
+    </button>
+  </div>
+  <code *ngIf="mockedRespBody" class="req-body-output">
+    <pre>{{mockedRespBody | json}}</pre>
+  </code>
+  <div class="bottom-btns">
+    <button *ngIf="mockedRespBody"
+            mat-raised-button
+            color="accent"
+            class="copy-mock-btn"
+            ngxClipboard
+            [cbContent]="mockedRespBodyString"
+            [container]="btnContainer">
+      <mat-icon aria-hidden="false" aria-label="Copy">content_copy</mat-icon>
+      Copy to Clipboard
+    </button>
+  </div>
+
 </div>
-<code class="req-body-output">
-  <pre>{{mockedRespBody | json}}</pre>
-</code>
