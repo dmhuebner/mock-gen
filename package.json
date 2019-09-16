@@ -1,6 +1,6 @@
 {
   "name": "mock-gen",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "An app that makes API calls and automatically creates mock responses out of the API response",
   "scripts": {
     "ng": "ng",

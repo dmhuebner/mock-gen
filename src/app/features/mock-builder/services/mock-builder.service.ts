@@ -9,7 +9,6 @@ export class MockBuilderService {
   constructor() { }
 
   buildMock(originalObj: object): object {
-    console.log('originalObj', originalObj);
     const mockedObject = {};
     const objIsArray = originalObj instanceof Array;
 
@@ -21,23 +20,18 @@ export class MockBuilderService {
           // Check value type and limits while building mockedObject
           switch (typeof(originalObj[prop])) {
             case 'string':
-              console.log('string', originalObj[prop]);
               mockedObject[prop] = this.processString(originalObj[prop]);
               break;
             case 'number':
-              console.log('number', originalObj[prop]);
               mockedObject[prop] = faker.random.number(originalObj[prop]);
               break;
             case 'boolean':
-              console.log('boolean', originalObj[prop]);
               mockedObject[prop] = faker.random.boolean();
               break;
             default:
               // Some default
-              console.log('default');
           }
         } else {
-          console.log('INNER OBJECT', originalObj[prop]);
           // If the value is an object, call recursively
           mockedObject[prop] = this.buildMock(originalObj[prop]);
         }
@@ -49,11 +43,14 @@ export class MockBuilderService {
   }
 
   mockString(inputString: string): string {
-    const stringWordsArray = inputString.split(' ');
     let mockedVal;
-    if (stringWordsArray.length > 1) {
+    // randomize sentences
+    if (inputString.indexOf(' ') > -1) {
       // Rebuild and randomize sentences with space breaks
-      mockedVal = stringWordsArray.map(word => faker.random.alphaNumeric(word.length)).join(' ');
+      mockedVal = this.rebuildStringWithBreaks(inputString, ' ');
+    } else if (inputString.indexOf('/') > -1) {
+      // Rebuild and randomize string path with '/'
+      mockedVal = this.rebuildStringWithBreaks(inputString, '/');
     } else {
       // Mock strings with no spaces
       mockedVal = faker.random.alphaNumeric(inputString.length);
@@ -72,5 +69,11 @@ export class MockBuilderService {
       // else its a word or sentence...
       return this.mockString(inputString);
     }
+  }
+
+  // Breaks down and mocks a string while preserving any breaking characters that you want to preserve (good for sentences or paths)
+  private rebuildStringWithBreaks(inputString: string, breakingChar: string): string {
+    const stringArray = inputString.split(breakingChar);
+    return stringArray.map(word => faker.random.alphaNumeric(word.length)).join(breakingChar);
   }
 }
