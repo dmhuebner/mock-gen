@@ -65,3 +65,13 @@ body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
+
+.success-snackbar {
+  color: #fff;
+  background-color: #008b4e;
+}
+
+.error-snackbar {
+  color: #fff;
+  background-color: #7b252d;
+}

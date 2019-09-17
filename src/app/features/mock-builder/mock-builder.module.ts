@@ -6,6 +6,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 const DECLARATIONS = [
     MockBuilderContainerComponent
@@ -14,7 +15,8 @@ const DECLARATIONS = [
 const MATERIAL_MODULES = [
     MatButtonModule,
     MatInputModule,
-    MatIconModule
+    MatIconModule,
+    MatSnackBarModule
 ];
 
 @NgModule({
