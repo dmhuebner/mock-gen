@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 const DECLARATIONS = [
     MockBuilderContainerComponent
@@ -16,7 +17,8 @@ const MATERIAL_MODULES = [
     MatButtonModule,
     MatInputModule,
     MatIconModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatCheckboxModule
 ];
 
 @NgModule({
