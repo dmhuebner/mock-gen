@@ -13,33 +13,34 @@ export class MockBuilderContainerComponent implements OnInit {
   @Input() sourceResponse: HttpResponse<object>;
   mockedRespBody: object;
   mockedRespBodyString: string;
+  mockResult: object;
   sourceObject: string;
+  numOfMocks: number;
 
   constructor(private mockBuilderService: MockBuilderService,
               private snackBar: MatSnackBar) { }
 
   ngOnInit() {}
 
-  genMockedObject() {
+  genMockedObject(numOfMocks?: number) {
+      const mockList: object[] = [];
       try {
           if (!this.sourceObject || this.sourceObject === '{}') {
               this.onInvalidInput('Object cannot be empty');
               return;
           }
 
-          this.mockedRespBody = this.mockBuilderService.buildMock(JSON.parse(this.sourceObject));
-          this.mockedRespBodyString = JSON.stringify(this.mockedRespBody);
-
-          if (this.mockedRespBodyString === '{}') {
-              this.onInvalidInput('Invalid JSON');
+          if (numOfMocks) {
+              for (let i = 0; i < numOfMocks; i++) {
+                  mockList.push(this.mockBuilderService.buildMock(JSON.parse(this.sourceObject)));
+              }
+              this.mockResult = mockList;
           } else {
-              this.snackBar.open('Mock Generated!', null, {
-                  horizontalPosition: 'end',
-                  verticalPosition: 'top',
-                  duration: 2000,
-                  panelClass: 'success-snackbar'
-              });
+              this.mockResult = this.mockBuilderService.buildMock(JSON.parse(this.sourceObject));
           }
+
+          this.mockedRespBodyString = JSON.stringify(this.mockResult);
+          this.notifyMockGenStatus();
       } catch (err) {
           this.onInvalidInput('Invalid JSON');
       }
@@ -47,7 +48,7 @@ export class MockBuilderContainerComponent implements OnInit {
 
   resetObjectToMock() {
       this.sourceObject = null;
-      this.mockedRespBody = null;
+      this.mockResult = null;
   }
 
   onCopyMockToClipboard() {
@@ -67,6 +68,19 @@ export class MockBuilderContainerComponent implements OnInit {
           panelClass: 'error-snackbar'
       });
       this.mockedRespBody = null;
+  }
+
+  private notifyMockGenStatus() {
+      if (JSON.stringify(this.mockResult) === '{}') {
+          this.onInvalidInput('Invalid JSON');
+      } else {
+          this.snackBar.open('Mock Generated!', null, {
+              horizontalPosition: 'end',
+              verticalPosition: 'top',
+              duration: 2000,
+              panelClass: 'success-snackbar'
+          });
+      }
   }
 
 }

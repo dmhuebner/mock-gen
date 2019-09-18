@@ -9,7 +9,7 @@
               placeholder="Paste in JSON to mock"
               name="input-obj"
               [(ngModel)]="sourceObject">
-  </textarea>
+      </textarea>
     </mat-form-field>
   </form>
   <div class="mock-btn-container" #btnContainer>
@@ -20,6 +20,21 @@
               [disabled]="!sourceObject">
         Generate Mock
       </button>
+      <mat-form-field class="num-of-mocks">
+        <mat-label>How Many?</mat-label>
+        <input class="num-of-mocks"
+               matInput
+               type="number"
+               placeholder="How Many?"
+               name="numOfMocks"
+               [(ngModel)]="numOfMocks" />
+      </mat-form-field>
+      <button mat-raised-button
+              color="primary"
+              (click)="genMockedObject(numOfMocks)"
+              [disabled]="!sourceObject">
+        Generate Mock List
+      </button>
       <button mat-raised-button
               color="secondary"
               (click)="resetObjectToMock()"
@@ -27,23 +42,25 @@
         Reset
       </button>
     </div>
-    <button *ngIf="mockedRespBody"
-            mat-raised-button
-            color="accent"
-            class="copy-mock-btn"
-            ngxClipboard
-            [cbContent]="mockedRespBodyString"
-            [container]="btnContainer"
-            (click)="onCopyMockToClipboard()">
-      <mat-icon aria-hidden="false" aria-label="Copy">content_copy</mat-icon>
-      Copy to Clipboard
-    </button>
+    <div class="left-btn-group">
+      <button *ngIf="mockResult"
+              mat-raised-button
+              color="accent"
+              class="copy-mock-btn"
+              ngxClipboard
+              [cbContent]="mockedRespBodyString"
+              [container]="btnContainer"
+              (click)="onCopyMockToClipboard()">
+        <mat-icon aria-hidden="false" aria-label="Copy">content_copy</mat-icon>
+        Copy to Clipboard
+      </button>
+    </div>
   </div>
-  <code *ngIf="mockedRespBody" class="req-body-output">
-    <pre>{{mockedRespBody | json}}</pre>
+  <code *ngIf="mockResult" class="req-body-output">
+    <pre>{{mockResult | json}}</pre>
   </code>
   <div class="bottom-btns">
-    <button *ngIf="mockedRespBody"
+    <button *ngIf="mockResult"
             mat-raised-button
             color="accent"
             class="copy-mock-btn"

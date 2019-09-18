@@ -13,9 +13,17 @@
     justify-content: space-between;
 
     .mock-source-btns {
+      .mat-form-field.num-of-mocks {
+        width: 6.5rem;
+        margin-right: 1rem;
+      }
       button  {
         margin-right: 1rem;
       }
+    }
+
+    .left-btn-group {
+      padding-top: 0.7rem;
     }
   }
 
