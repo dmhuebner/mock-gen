@@ -26,7 +26,7 @@ export class MockBuilderContainerComponent implements OnInit {
   genMockedObject(numOfMocks?: number) {
       const mockList: object[] = [];
       try {
-          if (!this.sourceObject || this.sourceObject === '{}') {
+          if (!this.sourceObject || this.sourceObject === '{}' || this.sourceObject === '[]') {
               this.onInvalidInput('Object cannot be empty');
               return;
           }
