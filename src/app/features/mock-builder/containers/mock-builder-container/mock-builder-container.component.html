@@ -14,13 +14,20 @@
   </form>
   <div class="mock-btn-container" #btnContainer>
     <div class="mock-source-btns">
+      <mat-checkbox
+              class="multiple-mocks-checkbox"
+              [(ngModel)]="multipleMocks">
+        Multi
+      </mat-checkbox>
       <button mat-raised-button
+              class="generate-mock"
               color="primary"
+              *ngIf="!multipleMocks"
               (click)="genMockedObject()"
               [disabled]="!sourceObject">
         Generate Mock
       </button>
-      <mat-form-field class="num-of-mocks">
+      <mat-form-field class="num-of-mocks" *ngIf="multipleMocks">
         <mat-label>How Many?</mat-label>
         <input class="num-of-mocks"
                matInput
@@ -31,6 +38,7 @@
       </mat-form-field>
       <button mat-raised-button
               color="primary"
+              *ngIf="multipleMocks"
               (click)="genMockedObject(numOfMocks)"
               [disabled]="!sourceObject">
         Generate Mock List

@@ -16,6 +16,7 @@ export class MockBuilderContainerComponent implements OnInit {
   mockResult: object;
   sourceObject: string;
   numOfMocks: number;
+  multipleMocks = false;
 
   constructor(private mockBuilderService: MockBuilderService,
               private snackBar: MatSnackBar) { }
@@ -30,7 +31,7 @@ export class MockBuilderContainerComponent implements OnInit {
               return;
           }
 
-          if (numOfMocks) {
+          if (this.multipleMocks && numOfMocks) {
               for (let i = 0; i < numOfMocks; i++) {
                   mockList.push(this.mockBuilderService.buildMock(JSON.parse(this.sourceObject)));
               }
