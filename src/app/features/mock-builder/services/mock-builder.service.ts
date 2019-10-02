@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as faker from 'faker';
 import { LETTERS, NUMBERS } from '../constants/available-characters.constant';
+import MockSettings from '../interfaces/mock-settings.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,7 @@ export class MockBuilderService {
   constructor() { }
 
   // TODO make interface for settings
-  buildMock(originalObj: object, settings?: any): object {
+  buildMock(originalObj: object, settings?: MockSettings): object {
     const mockedObject = {};
     const objIsArray = originalObj instanceof Array;
 
@@ -23,7 +24,7 @@ export class MockBuilderService {
           switch (typeof(originalObj[prop])) {
             case 'string':
               // preserveTypes setting for strings is designed to preserve letters or numbers in the output mocked string
-              const preserveTypes = settings ? settings.strings.preserveTypes : true;
+              const preserveTypes = settings ? settings.preserveLetterAndNumberTypes : true;
               mockedObject[prop] = this.processString(originalObj[prop], preserveTypes);
               break;
             case 'number':
@@ -89,9 +90,9 @@ export class MockBuilderService {
   private replaceCharTypes(inputString: string): string {
     return inputString.split('').map((char) => {
       if (isNaN(Number(char))) {
-        return LETTERS[Math.floor(Math.random() * 25)];
+        return LETTERS[Math.floor(Math.random() * LETTERS.length - 1)];
       } else {
-        return NUMBERS[Math.floor(Math.random() * 9)];
+        return NUMBERS[Math.floor(Math.random() * NUMBERS.length - 1)];
       }
     }).join('');
   }
