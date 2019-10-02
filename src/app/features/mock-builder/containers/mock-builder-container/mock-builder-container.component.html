@@ -1,6 +1,11 @@
 <div class="mock-gen-container">
   <h2 class="header">JSON Mock Generator</h2>
   <form class="mock-form">
+    <button mat-raised-button
+            class="settings-btn"
+            (click)="openSettings()">
+      <mat-icon>settings</mat-icon>
+    </button>
     <mat-form-field>
       <mat-label>Source to Mock</mat-label>
       <textarea rows="8"
@@ -80,5 +85,5 @@
       Copy to Clipboard
     </button>
   </div>
-
+  <pre>{{ this.settingsService.mockSettings$ | async | json }}</pre>
 </div>

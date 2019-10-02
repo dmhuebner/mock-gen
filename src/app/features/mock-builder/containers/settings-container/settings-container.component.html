@@ -1,0 +1,43 @@
+<section class="settings-container">
+  <header>
+    <h3>Mock Generator Settings</h3>
+  </header>
+  <form [formGroup]="settingsForm" (ngSubmit)="onSubmit()">
+    <section class="strings-settings">
+      <header>
+        <h4>Strings</h4>
+      </header>
+      <mat-label>
+        Use readable sentences instead of mocking sentences strictly to the length of each word
+      </mat-label>
+      <div class="checkbox-field">
+        <mat-checkbox
+                name="readableSentences"
+                formControlName="readableSentences">
+          Use readable sentences
+        </mat-checkbox>
+      </div>
+<!--      Preserve Characters Setting -->
+    </section>
+    <section class="strings-settings">
+      <header>
+        <h4>Numbers</h4>
+      </header>
+      <mat-label>
+        Mock Numbers up to the nth place where n is the highest number place for that number
+      </mat-label>
+      <div class="checkbox-field">
+        <mat-checkbox
+                name="mockNumberUpToPlace"
+                formControlName="mockNumberUpToPlace">
+          Mock Numbers up to nth place
+        </mat-checkbox>
+      </div>
+    </section>
+    <button mat-fab
+            class="submit-btn"
+            color="secondary">
+      <mat-icon>checkbox</mat-icon>
+    </button>
+  </form>
+</section>

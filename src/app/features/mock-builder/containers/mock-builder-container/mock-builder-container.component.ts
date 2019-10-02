@@ -2,6 +2,9 @@ import { Component, Input, OnInit } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { MockBuilderService } from '../../services/mock-builder.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
+import { SettingsContainerComponent } from '../settings-container/settings-container.component';
+import { MockSettingsService } from '../../services/mock-settings.service';
 
 @Component({
   selector: 'mg-mock-builder-container',
@@ -19,7 +22,9 @@ export class MockBuilderContainerComponent implements OnInit {
   multipleMocks = false;
 
   constructor(private mockBuilderService: MockBuilderService,
-              private snackBar: MatSnackBar) { }
+              private snackBar: MatSnackBar,
+              public dialog: MatDialog,
+              public settingsService: MockSettingsService) { }
 
   ngOnInit() {}
 
@@ -59,6 +64,10 @@ export class MockBuilderContainerComponent implements OnInit {
           duration: 2000,
           panelClass: 'success-snackbar'
       });
+  }
+
+  openSettings() {
+      const dialogRef = this.dialog.open(SettingsContainerComponent, {});
   }
 
   private onInvalidInput(message: string) {

@@ -8,9 +8,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialogModule } from '@angular/material/dialog';
+import { SettingsContainerComponent } from './containers/settings-container/settings-container.component';
 
 const DECLARATIONS = [
-    MockBuilderContainerComponent
+    MockBuilderContainerComponent,
+    SettingsContainerComponent
 ];
 
 const MATERIAL_MODULES = [
@@ -18,7 +21,8 @@ const MATERIAL_MODULES = [
     MatInputModule,
     MatIconModule,
     MatSnackBarModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatDialogModule
 ];
 
 @NgModule({
@@ -32,6 +36,9 @@ const MATERIAL_MODULES = [
   ],
   exports: [
       ...DECLARATIONS
+  ],
+  entryComponents: [
+      SettingsContainerComponent
   ]
 })
 export class MockBuilderModule { }
