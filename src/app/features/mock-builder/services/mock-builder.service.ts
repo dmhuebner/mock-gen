@@ -11,7 +11,7 @@ export class MockBuilderService {
   constructor() { }
 
   // TODO make interface for settings
-  buildMock(originalObj: object, settings?: MockSettings): object {
+  buildMock(originalObj: object, settings: MockSettings): object {
     const mockedObject = {};
     const objIsArray = originalObj instanceof Array;
 
@@ -23,12 +23,10 @@ export class MockBuilderService {
           // Check value type and limits while building mockedObject
           switch (typeof(originalObj[prop])) {
             case 'string':
-              // preserveTypes setting for strings is designed to preserve letters or numbers in the output mocked string
-              const preserveTypes = settings ? settings.preserveLetterAndNumberTypes : true;
-              mockedObject[prop] = this.processString(originalObj[prop], preserveTypes);
+              mockedObject[prop] = this.processString(originalObj[prop], settings);
               break;
             case 'number':
-              mockedObject[prop] = faker.random.number(originalObj[prop]);
+              mockedObject[prop] = this.numberMockingHandler(originalObj[prop], settings);
               break;
             case 'boolean':
               mockedObject[prop] = faker.random.boolean();
@@ -39,7 +37,7 @@ export class MockBuilderService {
           }
         } else {
           // If the value is an object, call recursively
-          mockedObject[prop] = this.buildMock(originalObj[prop]);
+          mockedObject[prop] = this.buildMock(originalObj[prop], settings);
         }
       }
     }
@@ -48,23 +46,25 @@ export class MockBuilderService {
     return objIsArray ? Object.values(mockedObject) : mockedObject;
   }
 
-  mockString(inputString: string, preserveTypes: boolean): string {
+  mockString(inputString: string, mockSettings: MockSettings): string {
     let mockedVal;
     // randomize sentences
     if (inputString.indexOf(' ') > -1) {
       // Rebuild and randomize sentences with space breaks
-      mockedVal = this.rebuildStringWithBreaks(inputString, ' ', preserveTypes);
+      mockedVal = this.rebuildStringWithBreaks(inputString, ' ', mockSettings);
     } else if (inputString.indexOf('/') > -1) {
       // Rebuild and randomize string path with '/'
-      mockedVal = this.rebuildStringWithBreaks(inputString, '/', preserveTypes);
+      mockedVal = this.rebuildStringWithBreaks(inputString, '/', mockSettings);
     } else {
       // Mock strings with no spaces
-      mockedVal = preserveTypes ? this.replaceCharTypes(inputString) : faker.random.alphaNumeric(inputString.length);
+      mockedVal = mockSettings.preserveLetterAndNumberTypes
+          ? this.replaceCharTypes(inputString)
+          : faker.random.alphaNumeric(inputString.length);
     }
     return mockedVal;
   }
 
-  processString(inputString: string, preserveTypes: boolean) {
+  processString(inputString: string, mockSettings: MockSettings) {
     // Check if its a date
     if (inputString.length > 5 && inputString.indexOf(':') !== -1 && !isNaN(new Date(inputString).getTime())) {
       return faker.date.past().toISOString();
@@ -73,18 +73,14 @@ export class MockBuilderService {
       return faker.random.uuid();
     } else {
       // else its a word or sentence...
-      return this.mockString(inputString, preserveTypes);
+      return this.mockString(inputString, mockSettings);
     }
   }
 
   // Breaks down and mocks a string while preserving any breaking characters that you want to preserve (good for sentences or paths)
-  private rebuildStringWithBreaks(inputString: string, breakingChar: string, preserveTypes: boolean = true): string {
+  private rebuildStringWithBreaks(inputString: string, breakingChar: string, mockSettings: MockSettings): string {
     const stringArray = inputString.split(breakingChar);
-    if (preserveTypes) {
-      return stringArray.map(word => this.replaceCharTypes(word)).join(breakingChar);
-    } else {
-      return stringArray.map(word => faker.random.alphaNumeric(word.length)).join(breakingChar);
-    }
+    return stringArray.map(word => this.stringMockingHandler(word, mockSettings)).join(breakingChar);
   }
 
   private replaceCharTypes(inputString: string): string {
@@ -95,5 +91,27 @@ export class MockBuilderService {
         return NUMBERS[Math.floor(Math.random() * NUMBERS.length - 1)];
       }
     }).join('');
+  }
+
+  private stringMockingHandler(inputString: string, mockSettings: MockSettings): string {
+    if (mockSettings.readableSentences) {
+      if (!isNaN(Number(inputString)) && mockSettings.preserveLetterAndNumberTypes) {
+        return String(this.numberMockingHandler(Number(inputString), mockSettings));
+      } else {
+        return faker.random.word();
+      }
+    } else if (mockSettings.preserveLetterAndNumberTypes) {
+      return this.replaceCharTypes(inputString);
+    } else {
+      return faker.random.alphaNumeric(inputString.length);
+    }
+  }
+
+  private numberMockingHandler(inputNumber: number, mockSettings: MockSettings): number {
+    if (mockSettings.mockNumberUpToPlace) {
+      return Number(inputNumber.toString().split('').map(num => faker.random.number(9)).join(''));
+    } else {
+      return faker.random.number(inputNumber);
+    }
   }
 }

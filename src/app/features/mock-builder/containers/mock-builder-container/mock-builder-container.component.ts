@@ -49,7 +49,7 @@ export class MockBuilderContainerComponent implements OnInit {
 
           if (this.multipleMocks && numOfMocks) {
               for (let i = 0; i < numOfMocks; i++) {
-                  mockList.push(this.mockBuilderService.buildMock(JSON.parse(this.sourceObject)), this.currentSettings);
+                  mockList.push(this.mockBuilderService.buildMock(JSON.parse(this.sourceObject), this.currentSettings));
               }
               this.mockResult = mockList;
           } else {
@@ -59,6 +59,7 @@ export class MockBuilderContainerComponent implements OnInit {
           this.mockedRespBodyString = JSON.stringify(this.mockResult);
           this.notifyMockGenStatus();
       } catch (err) {
+          console.log(err);
           this.onInvalidInput('Invalid JSON');
       }
   }
