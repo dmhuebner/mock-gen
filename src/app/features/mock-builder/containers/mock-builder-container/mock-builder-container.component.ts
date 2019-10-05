@@ -2,6 +2,12 @@ import { Component, Input, OnInit } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { MockBuilderService } from '../../services/mock-builder.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
+import { SettingsContainerComponent } from '../settings-container/settings-container.component';
+import { MockSettingsService } from '../../services/mock-settings.service';
+import { takeUntil } from 'rxjs/operators';
+import MockSettings from '../../interfaces/mock-settings.interface';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'mg-mock-builder-container',
@@ -17,13 +23,23 @@ export class MockBuilderContainerComponent implements OnInit {
   sourceObject: string;
   numOfMocks: number;
   multipleMocks = false;
+  currentSettings: MockSettings;
+  unsubscribe$ = new Subject();
 
   constructor(private mockBuilderService: MockBuilderService,
-              private snackBar: MatSnackBar) { }
+              private snackBar: MatSnackBar,
+              public dialog: MatDialog,
+              public settingsService: MockSettingsService) { }
 
-  ngOnInit() {}
+  ngOnInit() {
+      this.settingsService.mockSettings$.pipe(
+          takeUntil(this.unsubscribe$)
+      ).subscribe((settings: MockSettings) => {
+          this.currentSettings = settings;
+      });
+  }
 
-  genMockedObject(numOfMocks?: number) {
+  genMockedObject(numOfMocks?: number): void {
       const mockList: object[] = [];
       try {
           if (!this.sourceObject || this.sourceObject === '{}' || this.sourceObject === '[]') {
@@ -33,16 +49,17 @@ export class MockBuilderContainerComponent implements OnInit {
 
           if (this.multipleMocks && numOfMocks) {
               for (let i = 0; i < numOfMocks; i++) {
-                  mockList.push(this.mockBuilderService.buildMock(JSON.parse(this.sourceObject)));
+                  mockList.push(this.mockBuilderService.buildMock(JSON.parse(this.sourceObject), this.currentSettings));
               }
               this.mockResult = mockList;
           } else {
-              this.mockResult = this.mockBuilderService.buildMock(JSON.parse(this.sourceObject));
+              this.mockResult = this.mockBuilderService.buildMock(JSON.parse(this.sourceObject), this.currentSettings);
           }
 
           this.mockedRespBodyString = JSON.stringify(this.mockResult);
           this.notifyMockGenStatus();
       } catch (err) {
+          console.log(err);
           this.onInvalidInput('Invalid JSON');
       }
   }
@@ -59,6 +76,10 @@ export class MockBuilderContainerComponent implements OnInit {
           duration: 2000,
           panelClass: 'success-snackbar'
       });
+  }
+
+  openSettings() {
+      const dialogRef = this.dialog.open(SettingsContainerComponent, {});
   }
 
   private onInvalidInput(message: string) {
