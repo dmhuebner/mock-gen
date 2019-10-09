@@ -56,7 +56,6 @@ export class SettingsContainerComponent implements OnInit, OnDestroy {
   }
 
   addCharToPreserve(event: MatChipInputEvent): void {
-    console.log(event);
     const input = event.input;
     const value = event.value;
 

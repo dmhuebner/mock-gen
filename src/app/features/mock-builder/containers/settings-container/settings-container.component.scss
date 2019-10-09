@@ -1,6 +1,10 @@
 .settings-container {
   max-width: 50rem;
 
+  .disabled {
+    color: #bcbcbc;
+  }
+
   .chars-to-preserve {
     width: 100%;
   }

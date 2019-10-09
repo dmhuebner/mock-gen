@@ -27,17 +27,20 @@
           Preserve types in strings
         </mat-checkbox>
       </div>
-      <header>Preserve certain characters or substrings when mocking</header>
+      <header [class.disabled]="settingsForm.controls.readableSentences.value">
+        Preserve certain characters or substrings when mocking
+      </header>
       <mat-form-field class="chars-to-preserve">
-        <mat-chip-list #chipList aria-label="Characters to preserve">
+        <mat-chip-list #chipList aria-label="Characters to preserve" [disabled]="settingsForm.controls.readableSentences.value">
           <mat-chip *ngFor="let charStr of settingsForm.controls.charsToPreserve.value" [selectable]="true"
                     [removable]="true" (removed)="removeCharToPreserve(charStr)">
             {{charStr}}
-            <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+            <mat-icon matChipRemove *ngIf="!settingsForm.controls.readableSentences.value">cancel</mat-icon>
           </mat-chip>
           <input placeholder="Characters to preserve..."
                  [matChipInputFor]="chipList"
                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                 [matChipInputAddOnBlur]="true"
                  (matChipInputTokenEnd)="addCharToPreserve($event)">
         </mat-chip-list>
       </mat-form-field>
