@@ -10,6 +10,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule } from '@angular/material/dialog';
 import { SettingsContainerComponent } from './containers/settings-container/settings-container.component';
+import { MatChipsModule } from '@angular/material/chips';
 
 const DECLARATIONS = [
     MockBuilderContainerComponent,
@@ -22,7 +23,8 @@ const MATERIAL_MODULES = [
     MatIconModule,
     MatSnackBarModule,
     MatCheckboxModule,
-    MatDialogModule
+    MatDialogModule,
+    MatChipsModule
 ];
 
 @NgModule({

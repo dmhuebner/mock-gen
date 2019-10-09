@@ -10,7 +10,6 @@ export class MockBuilderService {
 
   constructor() { }
 
-  // TODO make interface for settings
   buildMock(originalObj: object, settings: MockSettings): object {
     const mockedObject = {};
     const objIsArray = originalObj instanceof Array;
@@ -47,14 +46,31 @@ export class MockBuilderService {
   }
 
   mockString(inputString: string, mockSettings: MockSettings): string {
-    let mockedVal;
+    let mockedVal = inputString;
     // randomize sentences
     if (inputString.indexOf(' ') > -1) {
       // Rebuild and randomize sentences with space breaks
       mockedVal = this.rebuildStringWithBreaks(inputString, ' ', mockSettings);
-    } else if (inputString.indexOf('/') > -1) {
+    }
+
+    if (mockSettings.charsToPreserve && mockSettings.charsToPreserve.length) {
       // Rebuild and randomize string path with '/'
-      mockedVal = this.rebuildStringWithBreaks(inputString, '/', mockSettings);
+      // mockedVal = this.rebuildStringWithBreaks(inputString, '/', mockSettings);
+
+      let charsToPreserveIndexMap = [];
+      let strippedString = mockedVal;
+
+      mockSettings.charsToPreserve.forEach(pattern => {
+        const indexMapObj = this.getAllIndexOfPattern(strippedString, pattern, charsToPreserveIndexMap);
+        charsToPreserveIndexMap = indexMapObj.indexMap;
+        strippedString = indexMapObj.strippedString;
+        console.log('STRIPPED STRING FORMING', strippedString);
+      });
+
+      console.log('strippedString', strippedString, 'charsToPreserveIndexMap', charsToPreserveIndexMap);
+      const mockedStrippedString = this.stringMockingHandler(strippedString, mockSettings);
+      mockedVal = this.reconstructString(mockedStrippedString, charsToPreserveIndexMap);
+      console.log('reconstructedString', mockedVal);
     } else {
       // Mock strings with no spaces
       mockedVal = mockSettings.preserveLetterAndNumberTypes
@@ -66,7 +82,10 @@ export class MockBuilderService {
 
   processString(inputString: string, mockSettings: MockSettings) {
     // Check if its a date
-    if (inputString.length > 5 && inputString.indexOf(':') !== -1 && !isNaN(new Date(inputString).getTime())) {
+    if (inputString.length > 5 &&
+        inputString.indexOf(':') !== -1 &&
+        !isNaN(new Date(inputString).getTime()) &&
+        inputString.substring(0, 4).toLowerCase() !== 'http') {
       return faker.date.past().toISOString();
     } else if (inputString.match(/([a-f\d]{8}(-[a-f\d]{4}){3}-[a-f\d]{12}?)/i)) {
       // Check if its a guid
@@ -84,6 +103,13 @@ export class MockBuilderService {
   }
 
   private replaceCharTypes(inputString: string): string {
+    // Loop through and do indexOf each subString
+      // If indexOf is not -1
+        // push that string with its index into an array, remove it from the string we're searching and continue
+
+    // After we have all the indicies of the chars we want to preserve, mock the string
+    // After mocking the string, re-insert all the characters to preserve at the corresponding indicies we captured
+
     return inputString.split('').map((char) => {
       if (isNaN(Number(char))) {
         return LETTERS[Math.floor(Math.random() * LETTERS.length - 1)];
@@ -114,4 +140,44 @@ export class MockBuilderService {
       return faker.random.number(inputNumber);
     }
   }
+
+  private getAllIndexOfPattern(stringToSearch: string, pattern: string, indexMap?: any[]) {
+    indexMap = indexMap || [];
+    let patternRefObj = indexMap.find(obj => obj.pattern === pattern);
+    if (!patternRefObj) {
+      patternRefObj = {pattern, indexList: []};
+      indexMap.push(patternRefObj);
+    }
+    let index = stringToSearch.indexOf(pattern);
+
+    if (index !== -1) {
+      patternRefObj.indexList.push(index);
+      stringToSearch = stringToSearch.slice(0, index) + stringToSearch.slice(index + pattern.length);
+      index = stringToSearch.indexOf(pattern);
+      if (index !== -1) {
+        const indexMapObj = this.getAllIndexOfPattern(stringToSearch, pattern, indexMap);
+        indexMap = indexMapObj.indexMap;
+        stringToSearch = indexMapObj.strippedString;
+      }
+    }
+
+    return {
+      indexMap,
+      strippedString: stringToSearch
+    };
+  }
+
+  reconstructString(strippedString: string, indexMapList: any[]): string {
+    return indexMapList.slice().reverse().reduce((str, indexMapObj) => {
+      indexMapObj.indexList.slice().reverse().forEach(index => {
+        if (index !== str.length - 1) {
+          str = str.slice(0, index) + indexMapObj.pattern + str.slice(index);
+        } else {
+          str = str.slice(0, index) + indexMapObj.pattern;
+        }
+      });
+      return str;
+    }, strippedString);
+  }
+
 }

@@ -1,6 +1,10 @@
 .settings-container {
   max-width: 50rem;
 
+  .chars-to-preserve {
+    width: 100%;
+  }
+
   .checkbox-field {
     margin: 1rem 0;
   }
