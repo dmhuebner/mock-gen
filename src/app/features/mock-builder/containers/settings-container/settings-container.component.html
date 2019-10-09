@@ -2,68 +2,74 @@
   <header>
     <h3>Mock Generator Settings</h3>
   </header>
-  <form [formGroup]="settingsForm" (ngSubmit)="onSubmit()">
-    <section class="strings-settings">
-      <header>
-        <h4>Strings</h4>
-      </header>
-      <mat-label>
-        Use readable sentences instead of mocking sentences strictly to the length of each word
-      </mat-label>
-      <div class="checkbox-field">
-        <mat-checkbox
-                name="readableSentences"
-                formControlName="readableSentences">
-          Use readable sentences
-        </mat-checkbox>
+    <form [formGroup]="settingsForm" (ngSubmit)="onSubmit()">
+      <div class="inner-wrapper">
+        <section class="strings-settings">
+          <header>
+            <h4>Strings</h4>
+          </header>
+          <div class="settings-section">
+            <mat-label>
+              Use readable sentences instead of mocking sentences strictly to the length of each word
+            </mat-label>
+            <div class="checkbox-field">
+              <mat-checkbox
+                      name="readableSentences"
+                      formControlName="readableSentences">
+                Use readable sentences
+              </mat-checkbox>
+            </div>
+            <mat-label>
+              Preserve number and letter types in strings when mocking
+            </mat-label>
+            <div class="checkbox-field">
+              <mat-checkbox
+                      name="preserveLetterAndNumberTypes"
+                      formControlName="preserveLetterAndNumberTypes">
+                Preserve types in strings
+              </mat-checkbox>
+            </div>
+            <header [class.disabled]="settingsForm.controls.readableSentences.value">
+              Preserve certain characters or substrings when mocking
+            </header>
+            <mat-form-field class="chars-to-preserve">
+              <mat-chip-list #chipList aria-label="Characters to preserve" [disabled]="settingsForm.controls.readableSentences.value">
+                <mat-chip *ngFor="let charStr of settingsForm.controls.charsToPreserve.value" [selectable]="true"
+                          [removable]="true" (removed)="removeCharToPreserve(charStr)">
+                  {{charStr}}
+                  <mat-icon matChipRemove *ngIf="!settingsForm.controls.readableSentences.value">cancel</mat-icon>
+                </mat-chip>
+                <input placeholder="Characters to preserve..."
+                       [matChipInputFor]="chipList"
+                       [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                       [matChipInputAddOnBlur]="true"
+                       (matChipInputTokenEnd)="addCharToPreserve($event)">
+              </mat-chip-list>
+            </mat-form-field>
+          </div>
+        </section>
+        <section class="numbers-settings">
+          <header>
+            <h4>Numbers</h4>
+          </header>
+          <div class="settings-section">
+            <mat-label>
+              Mock Numbers up to the nth place where n is the highest number place for that number
+            </mat-label>
+            <div class="checkbox-field">
+              <mat-checkbox
+                      name="mockNumberUpToPlace"
+                      formControlName="mockNumberUpToPlace">
+                Mock Numbers up to nth place
+              </mat-checkbox>
+            </div>
+          </div>
+        </section>
       </div>
-      <mat-label>
-        Preserve number and letter types in strings when mocking
-      </mat-label>
-      <div class="checkbox-field">
-        <mat-checkbox
-                name="preserveLetterAndNumberTypes"
-                formControlName="preserveLetterAndNumberTypes">
-          Preserve types in strings
-        </mat-checkbox>
-      </div>
-      <header [class.disabled]="settingsForm.controls.readableSentences.value">
-        Preserve certain characters or substrings when mocking
-      </header>
-      <mat-form-field class="chars-to-preserve">
-        <mat-chip-list #chipList aria-label="Characters to preserve" [disabled]="settingsForm.controls.readableSentences.value">
-          <mat-chip *ngFor="let charStr of settingsForm.controls.charsToPreserve.value" [selectable]="true"
-                    [removable]="true" (removed)="removeCharToPreserve(charStr)">
-            {{charStr}}
-            <mat-icon matChipRemove *ngIf="!settingsForm.controls.readableSentences.value">cancel</mat-icon>
-          </mat-chip>
-          <input placeholder="Characters to preserve..."
-                 [matChipInputFor]="chipList"
-                 [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                 [matChipInputAddOnBlur]="true"
-                 (matChipInputTokenEnd)="addCharToPreserve($event)">
-        </mat-chip-list>
-      </mat-form-field>
-    </section>
-    <section class="strings-settings">
-      <header>
-        <h4>Numbers</h4>
-      </header>
-      <mat-label>
-        Mock Numbers up to the nth place where n is the highest number place for that number
-      </mat-label>
-      <div class="checkbox-field">
-        <mat-checkbox
-                name="mockNumberUpToPlace"
-                formControlName="mockNumberUpToPlace">
-          Mock Numbers up to nth place
-        </mat-checkbox>
-      </div>
-    </section>
-    <button mat-fab
-            class="submit-btn"
-            color="secondary">
-      <mat-icon>checkbox</mat-icon>
-    </button>
-  </form>
+      <button mat-fab
+              class="submit-btn"
+              color="secondary">
+        <mat-icon>checkbox</mat-icon>
+      </button>
+    </form>
 </section>
