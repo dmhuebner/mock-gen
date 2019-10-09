@@ -1,11 +1,13 @@
 <div class="mock-gen-container">
   <h2 class="header">JSON Mock Generator</h2>
   <form class="mock-form">
-    <button mat-raised-button
-            class="settings-btn"
-            (click)="openSettings()">
-      <mat-icon>settings</mat-icon>
-    </button>
+    <div class="settings-btn">
+      <button mat-raised-button
+              class="settings-btn"
+              (click)="openSettings()">
+        <mat-icon>settings</mat-icon>
+      </button>
+    </div>
     <mat-form-field>
       <mat-label>Source to Mock</mat-label>
       <textarea rows="8"
@@ -37,6 +39,7 @@
         <input class="num-of-mocks"
                matInput
                type="number"
+               max="1000"
                placeholder="How Many?"
                name="numOfMocks"
                [(ngModel)]="numOfMocks" />
@@ -85,4 +88,5 @@
       Copy to Clipboard
     </button>
   </div>
+<!--  <pre>{{currentSettings | json}}</pre>-->
 </div>

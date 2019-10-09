@@ -3,6 +3,13 @@
     text-align: center;
   }
   .mock-form {
+    .settings-btn {
+      text-align: right;
+      button {
+        text-align: center;
+      }
+    }
+
     .mat-form-field {
       width: 100%;
     }
@@ -41,6 +48,7 @@
       padding: 1rem;
       background-color: #333;
       color: #fff;
+      overflow: scroll;
     }
   }
 

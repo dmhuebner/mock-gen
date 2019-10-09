@@ -23,6 +23,7 @@ export class MockBuilderContainerComponent implements OnInit {
   sourceObject: string;
   numOfMocks: number;
   multipleMocks = false;
+  maxNumOfMocks = 1000;
   currentSettings: MockSettings;
   unsubscribe$ = new Subject();
 
@@ -43,15 +44,19 @@ export class MockBuilderContainerComponent implements OnInit {
       const mockList: object[] = [];
       try {
           if (!this.sourceObject || this.sourceObject === '{}' || this.sourceObject === '[]') {
-              this.onInvalidInput('Object cannot be empty');
-              return;
+              return this.onInvalidInput('Object cannot be empty');
           }
 
           if (this.multipleMocks && numOfMocks) {
-              for (let i = 0; i < numOfMocks; i++) {
-                  mockList.push(this.mockBuilderService.buildMock(JSON.parse(this.sourceObject), this.currentSettings));
+              if (numOfMocks <= this.maxNumOfMocks) {
+                  for (let i = 0; i < numOfMocks; i++) {
+                      mockList.push(this.mockBuilderService.buildMock(JSON.parse(this.sourceObject), this.currentSettings));
+                  }
+                  this.mockResult = mockList;
+              } else {
+                  this.mockResult = null;
+                  return this.onMaxNumMocksExceeded();
               }
-              this.mockResult = mockList;
           } else {
               this.mockResult = this.mockBuilderService.buildMock(JSON.parse(this.sourceObject), this.currentSettings);
           }
@@ -84,6 +89,16 @@ export class MockBuilderContainerComponent implements OnInit {
 
   private onInvalidInput(message: string) {
       this.snackBar.open(message, null, {
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          duration: 2000,
+          panelClass: 'error-snackbar'
+      });
+      this.mockedRespBody = null;
+  }
+
+  private onMaxNumMocksExceeded() {
+      this.snackBar.open('Cannot create more than 1,000 mocks at a time', null, {
           horizontalPosition: 'end',
           verticalPosition: 'top',
           duration: 2000,
