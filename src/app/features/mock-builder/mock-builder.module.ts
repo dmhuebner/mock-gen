@@ -11,10 +11,12 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule } from '@angular/material/dialog';
 import { SettingsContainerComponent } from './containers/settings-container/settings-container.component';
 import { MatChipsModule } from '@angular/material/chips';
+import { MockSettingsComponent } from './components/mock-settings/mock-settings.component';
 
 const DECLARATIONS = [
     MockBuilderContainerComponent,
-    SettingsContainerComponent
+    SettingsContainerComponent,
+    MockSettingsComponent,
 ];
 
 const MATERIAL_MODULES = [

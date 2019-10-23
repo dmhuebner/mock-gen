@@ -18,10 +18,10 @@ export class SettingsContainerComponent implements OnInit, OnDestroy {
   settingsForm: FormGroup;
   currentSettings: MockSettings;
   unsubscribe$ = new Subject();
-
-  removable = true;
-  readonly separatorKeysCodes: number[] = [ENTER];
+  // readonly separatorKeysCodes: number[] = [ENTER];
   charsToPreserve: string[];
+  charsToPreservePerPropMap = {};
+  propSettingsList: string[] = [];
 
   constructor(private fb: FormBuilder,
               private dialogRef: MatDialogRef<SettingsContainerComponent>,
@@ -55,27 +55,41 @@ export class SettingsContainerComponent implements OnInit, OnDestroy {
     this.dialogRef.close();
   }
 
-  addCharToPreserve(event: MatChipInputEvent): void {
-    const input = event.input;
-    const value = event.value;
+  // addCharToPreserve(event: MatChipInputEvent): void {
+  //   const input = event.input;
+  //   const value = event.value;
+  //
+  //   if ((value || '').trim()) {
+  //     this.charsToPreserve.push(value.trim());
+  //     this.settingsForm.controls.charsToPreserve.setValue(this.charsToPreserve);
+  //   }
+  //
+  //   if (input) {
+  //     input.value = '';
+  //   }
+  // }
+  //
+  // removeCharToPreserve(charsToPreserve: string): void {
+  //   const index = this.charsToPreserve.indexOf(charsToPreserve);
+  //   if (index >= 0) {
+  //     this.charsToPreserve.splice(index, 1);
+  //   }
+  //
+  //   this.settingsForm.controls.charsToPreserve.setValue(this.charsToPreserve);
+  // }
 
-    if ((value || '').trim()) {
-      this.charsToPreserve.push(value.trim());
-      this.settingsForm.controls.charsToPreserve.setValue(this.charsToPreserve);
-    }
-
-    if (input) {
-      input.value = '';
-    }
+  // TODO fix this function so that it works with not just general settings but property specific settings
+  onCharsToPreserveChanged(updatedCharsToPreserve: string[]): void {
+    // if (updatedCharsToPreserveMeta.propName) {
+    //
+    // }
+    this.settingsForm.get('charsToPreserve').setValue(updatedCharsToPreserve);
   }
 
-  removeCharToPreserve(charsToPreserve: string): void {
-    const index = this.charsToPreserve.indexOf(charsToPreserve);
-    if (index >= 0) {
-      this.charsToPreserve.splice(index, 1);
-    }
-
-    this.settingsForm.controls.charsToPreserve.setValue(this.charsToPreserve);
+  addSettingGroup(settingProp: string) {
+    console.log(settingProp);
+    this.propSettingsList.push(settingProp);
+    this.settingsForm.addControl(settingProp, this.initializeSettingsForm());
   }
 }
 
