@@ -19,19 +19,19 @@ export class MockBuilderService {
       if (originalObj.hasOwnProperty(prop)) {
         // If a prop is an object call this recursively
         if (typeof(originalObj[prop]) !== 'object') {
+          const settingsToUse = settings[prop] || settings;
           // Check value type and limits while building mockedObject
           switch (typeof(originalObj[prop])) {
             case 'string':
-              mockedObject[prop] = this.processString(originalObj[prop], settings);
+              mockedObject[prop] = this.processString(originalObj[prop], settingsToUse);
               break;
             case 'number':
-              mockedObject[prop] = this.numberMockingHandler(originalObj[prop], settings);
+              mockedObject[prop] = this.numberMockingHandler(originalObj[prop], settingsToUse);
               break;
             case 'boolean':
               mockedObject[prop] = faker.random.boolean();
               break;
             default:
-              // Some default
               mockedObject[prop] = 'COULD_NOT_MOCK';
           }
         } else {
@@ -149,6 +149,7 @@ export class MockBuilderService {
   }
 
   private mockStringWithPreservedChars(stringToMock: string, mockSettings: MockSettings): string {
+    // Automatically preserve ' '
     const charsToPreserveUnderTheHood = [' '];
     let charsToPreserveIndexMap: PatternIndexMap[] = [];
     let strippedString = stringToMock;

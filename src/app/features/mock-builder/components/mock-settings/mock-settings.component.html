@@ -1,0 +1,15 @@
+<div class="inner-wrapper" [formGroup]="settingsForm">
+    <h3>{{settingsHeader}}</h3>
+    <mg-string-settings
+            [settingsForm]="settingsForm"
+            [settingsName]="settingsName"
+            [charsToPreserve]="charsToPreserve"
+            (changedCharsToPreserve)="onChangedCharsToPreserve($event)">
+    </mg-string-settings>
+  <mg-number-settings
+          [settingsForm]="settingsForm"
+          [settingsName]="settingsName"
+          [settingsHeader]="settingsHeader">
+  </mg-number-settings>
+</div>
+<hr>

@@ -1,0 +1,17 @@
+<section class="numbers-settings" [formGroup]="settingsForm">
+  <header>
+    <h4>Numbers</h4>
+  </header>
+  <div class="settings-section">
+    <mat-label>
+      Mock Numbers up to the nth place where n is the highest number place for that number
+    </mat-label>
+    <div class="checkbox-field">
+      <mat-checkbox
+              name="mockNumberUpToPlace"
+              formControlName="mockNumberUpToPlace">
+        Mock Numbers up to nth place
+      </mat-checkbox>
+    </div>
+  </div>
+</section>

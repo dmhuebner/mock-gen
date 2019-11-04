@@ -15,6 +15,7 @@ export class MockSettingsService {
   constructor() {}
 
   updateSettings(currentSettings: MockSettings) {
+    console.log('currentSettings', currentSettings);
     this.mockSettingsSubject.next(currentSettings);
   }
 }

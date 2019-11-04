@@ -3,73 +3,71 @@
     <h3>Mock Generator Settings</h3>
   </header>
     <form [formGroup]="settingsForm" (ngSubmit)="onSubmit()">
-      <div class="inner-wrapper">
-        <section class="strings-settings">
-          <header>
-            <h4>Strings</h4>
-          </header>
-          <div class="settings-section">
-            <mat-label>
-              Use readable sentences instead of mocking sentences strictly to the length of each word
-            </mat-label>
-            <div class="checkbox-field">
-              <mat-checkbox
-                      name="readableSentences"
-                      formControlName="readableSentences">
-                Use readable sentences
-              </mat-checkbox>
-            </div>
-            <mat-label>
-              Preserve number and letter types in strings when mocking
-            </mat-label>
-            <div class="checkbox-field">
-              <mat-checkbox
-                      name="preserveLetterAndNumberTypes"
-                      formControlName="preserveLetterAndNumberTypes">
-                Preserve types in strings
-              </mat-checkbox>
-            </div>
-            <header [class.disabled]="settingsForm.controls.readableSentences.value">
-              Preserve certain characters or substrings when mocking
-            </header>
-            <mat-form-field class="chars-to-preserve">
-              <mat-chip-list #chipList aria-label="Characters to preserve" [disabled]="settingsForm.controls.readableSentences.value">
-                <mat-chip *ngFor="let charStr of settingsForm.controls.charsToPreserve.value" [selectable]="true"
-                          [removable]="true" (removed)="removeCharToPreserve(charStr)">
-                  {{charStr}}
-                  <mat-icon matChipRemove *ngIf="!settingsForm.controls.readableSentences.value">cancel</mat-icon>
-                </mat-chip>
-                <input placeholder="Characters to preserve..."
-                       [matChipInputFor]="chipList"
-                       [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                       [matChipInputAddOnBlur]="true"
-                       (matChipInputTokenEnd)="addCharToPreserve($event)">
-              </mat-chip-list>
-            </mat-form-field>
+      <div class="dialog-body">
+        <section class="general-settings">
+          <mg-mock-settings
+                  settingsHeader="Global Settings:"
+                  [settingsForm]="settingsForm"
+                  [charsToPreserve]="charsToPreservePerPropMap.global"
+                  (changedCharsToPreserve)="onCharsToPreserveChanged($event)">
+          </mg-mock-settings>
+          <div class="prop-settings" *ngFor="let propSettings of propSettingsList">
+            <h3>{{propSettings.propName + ' Settings:'}}</h3>
+            <mg-string-settings
+                    *ngIf="propSettings.type === 'string'"
+                    [settingsName]="propSettings.propName"
+                    [settingsForm]="settingsForm.controls[propSettings.propName]"
+                    [charsToPreserve]="charsToPreservePerPropMap[propSettings.propName]"
+                    (changedCharsToPreserve)="onCharsToPreserveChanged($event)">
+            </mg-string-settings>
+            <mg-number-settings
+                    *ngIf="propSettings.type === 'number'"
+                    [settingsName]="propSettings.propName"
+                    [settingsForm]="settingsForm.controls[propSettings.propName]">
+            </mg-number-settings>
+            <mg-boolean-settings
+                    *ngIf="propSettings.type === 'boolean'"
+                    [settingsName]="propSettings.propName"
+                    [settingsForm]="settingsForm.controls[propSettings.propName]">
+            </mg-boolean-settings>
           </div>
-        </section>
-        <section class="numbers-settings">
-          <header>
-            <h4>Numbers</h4>
-          </header>
-          <div class="settings-section">
-            <mat-label>
-              Mock Numbers up to the nth place where n is the highest number place for that number
-            </mat-label>
-            <div class="checkbox-field">
-              <mat-checkbox
-                      name="mockNumberUpToPlace"
-                      formControlName="mockNumberUpToPlace">
-                Mock Numbers up to nth place
-              </mat-checkbox>
-            </div>
-          </div>
+          <!--        <div class="control-buttons">-->
+          <!--          <div class="right-btns">-->
+          <mat-form-field>
+            <mat-label>Property Name</mat-label>
+            <input #propertyToAddName
+                   matInput
+                   placeholder="foo, foo.bar"
+                   name="property-name"/>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Property Type</mat-label>
+            <mat-select #propertyToAddType>
+              <mat-option *ngFor="let type of propertyTypes" [value]="type">
+                {{type}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <button mat-raised-button
+                  class="add-property-settings"
+                  color="secondary"
+                  type="button"
+                  (click)="addSettingGroup(propertyToAddName.value, propertyToAddType.value);
+                           propertyToAddName.value = '';
+                           propertyToAddType.value = ''">
+            <mat-icon>add</mat-icon> Add Settings
+          </button>
+          <!--          </div>-->
+          <!--        </div>-->
         </section>
       </div>
-      <button mat-fab
-              class="submit-btn"
-              color="secondary">
-        <mat-icon>checkbox</mat-icon>
-      </button>
+      <div class="dialog-footer">
+        <button mat-fab
+                class="submit-btn"
+                color="secondary">
+          <mat-icon>checkbox</mat-icon>
+        </button>
+      </div>
     </form>
+  <pre>{{settingsForm.value | json}}</pre>
 </section>

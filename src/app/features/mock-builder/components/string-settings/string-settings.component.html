@@ -1,0 +1,44 @@
+<section class="strings-settings" [formGroup]="settingsForm">
+  <header>
+    <h4>Strings</h4>
+  </header>
+  <div class="settings-section">
+    <mat-label>
+      Use readable sentences instead of mocking sentences strictly to the length of each word
+    </mat-label>
+    <div class="checkbox-field">
+      <mat-checkbox
+              name="readableSentences"
+              formControlName="readableSentences">
+        Use readable sentences
+      </mat-checkbox>
+    </div>
+    <mat-label>
+      Preserve number and letter types in strings when mocking
+    </mat-label>
+    <div class="checkbox-field">
+      <mat-checkbox
+              name="preserveLetterAndNumberTypes"
+              formControlName="preserveLetterAndNumberTypes">
+        Preserve types in strings
+      </mat-checkbox>
+    </div>
+    <header [class.disabled]="settingsForm.controls.readableSentences.value">
+      Preserve certain characters or substrings when mocking
+    </header>
+    <mat-form-field class="chars-to-preserve" *ngIf="settingsForm">
+      <mat-chip-list #chipList aria-label="Characters to preserve" [disabled]="settingsForm.controls.readableSentences.value">
+        <mat-chip *ngFor="let charStr of charsToPreserve" [selectable]="true"
+                  [removable]="true" (removed)="removeCharToPreserve(charStr)">
+          {{charStr}}
+          <mat-icon matChipRemove *ngIf="!settingsForm.controls.readableSentences.value">cancel</mat-icon>
+        </mat-chip>
+        <input placeholder="Characters to preserve..."
+               [matChipInputFor]="chipList"
+               [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+               [matChipInputAddOnBlur]="true"
+               (matChipInputTokenEnd)="addCharToPreserve($event)">
+      </mat-chip-list>
+    </mat-form-field>
+  </div>
+</section>

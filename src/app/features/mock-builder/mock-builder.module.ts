@@ -11,10 +11,19 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule } from '@angular/material/dialog';
 import { SettingsContainerComponent } from './containers/settings-container/settings-container.component';
 import { MatChipsModule } from '@angular/material/chips';
+import { MockSettingsComponent } from './components/mock-settings/mock-settings.component';
+import { MatSelectModule } from '@angular/material/select';
+import { StringSettingsComponent } from './components/string-settings/string-settings.component';
+import { NumberSettingsComponent } from './components/number-settings/number-settings.component';
+import { BooleanSettingsComponent } from './components/boolean-settings/boolean-settings.component';
 
 const DECLARATIONS = [
     MockBuilderContainerComponent,
-    SettingsContainerComponent
+    SettingsContainerComponent,
+    MockSettingsComponent,
+    StringSettingsComponent,
+    NumberSettingsComponent,
+    BooleanSettingsComponent
 ];
 
 const MATERIAL_MODULES = [
@@ -24,7 +33,8 @@ const MATERIAL_MODULES = [
     MatSnackBarModule,
     MatCheckboxModule,
     MatDialogModule,
-    MatChipsModule
+    MatChipsModule,
+    MatSelectModule
 ];
 
 @NgModule({
@@ -37,7 +47,8 @@ const MATERIAL_MODULES = [
       ...MATERIAL_MODULES
   ],
   exports: [
-      ...DECLARATIONS
+      MockBuilderContainerComponent,
+      SettingsContainerComponent,
   ],
   entryComponents: [
       SettingsContainerComponent

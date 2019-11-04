@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MockSettingsService } from '../../services/mock-settings.service';
 import MockSettings from '../../interfaces/mock-settings.interface';
@@ -7,6 +7,14 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { ENTER } from '@angular/cdk/keycodes';
+import { CharsToPreserveMeta } from '../../interfaces/chars-to-preserve-meta.interface';
+
+const PROPERTY_TYPES = ['string', 'number', 'boolean'];
+
+interface PropSettingsRef {
+  propName: string;
+  type: 'string' | 'number' | 'boolean';
+}
 
 @Component({
   selector: 'mg-settings-container',
@@ -15,13 +23,13 @@ import { ENTER } from '@angular/cdk/keycodes';
 })
 export class SettingsContainerComponent implements OnInit, OnDestroy {
 
+  propertyTypes = PROPERTY_TYPES;
   settingsForm: FormGroup;
   currentSettings: MockSettings;
   unsubscribe$ = new Subject();
-
-  removable = true;
-  readonly separatorKeysCodes: number[] = [ENTER];
-  charsToPreserve: string[];
+  charsToPreserve: string[] = [];
+  charsToPreservePerPropMap: any = {};
+  propSettingsList: PropSettingsRef[] = [];
 
   constructor(private fb: FormBuilder,
               private dialogRef: MatDialogRef<SettingsContainerComponent>,
@@ -32,7 +40,8 @@ export class SettingsContainerComponent implements OnInit, OnDestroy {
         takeUntil(this.unsubscribe$)
     ).subscribe((settings: MockSettings) => {
       this.currentSettings = settings;
-      this.charsToPreserve = this.currentSettings.charsToPreserve;
+      // Set global settings in map
+      this.charsToPreservePerPropMap.global = this.currentSettings.charsToPreserve;
     });
     this.settingsForm = this.initializeSettingsForm();
   }
@@ -42,12 +51,17 @@ export class SettingsContainerComponent implements OnInit, OnDestroy {
   }
 
   initializeSettingsForm(): FormGroup {
-    return this.fb.group({
-      readableSentences: [this.currentSettings.readableSentences || false, []],
-      preserveLetterAndNumberTypes: [this.currentSettings ? this.currentSettings.preserveLetterAndNumberTypes : true, []],
-      charsToPreserve: [this.currentSettings.charsToPreserve, []],
-      mockNumberUpToPlace: [this.currentSettings.mockNumberUpToPlace || false, []]
+    const standardSettings = ['readableSentences', 'preserveLetterAndNumberTypes', 'charsToPreserve', 'mockNumberUpToPlace'];
+
+    const settingsGroup = this.getSettingsGroup();
+
+    Object.keys(this.currentSettings).forEach(setting => {
+      if (!standardSettings.includes(setting)) {
+        this.addSettingGroup(setting, this.currentSettings[setting].propType, settingsGroup);
+      }
     });
+
+    return settingsGroup;
   }
 
   onSubmit() {
@@ -55,27 +69,76 @@ export class SettingsContainerComponent implements OnInit, OnDestroy {
     this.dialogRef.close();
   }
 
-  addCharToPreserve(event: MatChipInputEvent): void {
-    const input = event.input;
-    const value = event.value;
+  getSettingsGroup(type?: 'string' | 'number' | 'boolean', settingPropName?: string): FormGroup {
+    let group = this.fb.group({});
 
-    if ((value || '').trim()) {
-      this.charsToPreserve.push(value.trim());
-      this.settingsForm.controls.charsToPreserve.setValue(this.charsToPreserve);
+    switch (type) {
+      case 'string':
+        group = this.addStringSettingsToGroup(group, settingPropName);
+        group.addControl('propType', new FormControl('string', []));
+        break;
+      case 'number':
+        group = this.addNumberSettingsToGroup(group, settingPropName);
+        group.addControl('propType', new FormControl('number', []));
+        break;
+      case 'boolean':
+        // group = this.addBooleanSettingsToGroup(group);
+        group.addControl('propType', new FormControl('boolean', []));
+        break;
+      default:
+        group = this.addStringSettingsToGroup(group);
+        group = this.addNumberSettingsToGroup(group);
+        // group = this.addBooleanSettingsToGroup(group);
     }
 
-    if (input) {
-      input.value = '';
+    return group;
+  }
+
+  addStringSettingsToGroup(group: FormGroup, settingPropName?: string): FormGroup {
+    let settings: MockSettings;
+    if (settingPropName && this.currentSettings[settingPropName]) {
+      settings = this.currentSettings[settingPropName];
+    } else {
+      settings = this.currentSettings;
+    }
+    group.addControl('readableSentences', new FormControl(settings.readableSentences || false, []));
+    group.addControl('preserveLetterAndNumberTypes', new FormControl(
+        settings ? settings.preserveLetterAndNumberTypes : true, []
+      ));
+    group.addControl('charsToPreserve', new FormControl(settings.charsToPreserve || false, []));
+    return group;
+  }
+
+  addNumberSettingsToGroup(group: FormGroup, settingPropName?: string): FormGroup {
+    let settings: MockSettings;
+    if (settingPropName && this.currentSettings[settingPropName]) {
+      settings = this.currentSettings[settingPropName];
+    } else {
+      settings = this.currentSettings;
+    }
+    group.addControl('mockNumberUpToPlace', new FormControl(settings.mockNumberUpToPlace || false, []));
+    return group;
+  }
+
+  onCharsToPreserveChanged(updatedCharsMeta: CharsToPreserveMeta): void {
+    if (updatedCharsMeta.name) {
+      if (updatedCharsMeta.name.indexOf('.') === -1) {
+        this.charsToPreservePerPropMap[updatedCharsMeta.name] = updatedCharsMeta.charsToPreserve;
+        this.settingsForm.controls[updatedCharsMeta.name].get('charsToPreserve').setValue(updatedCharsMeta.charsToPreserve);
+      } else {
+        // TODO drill into . value
+      }
+    } else {
+      this.settingsForm.get('charsToPreserve').setValue(updatedCharsMeta.charsToPreserve);
     }
   }
 
-  removeCharToPreserve(charsToPreserve: string): void {
-    const index = this.charsToPreserve.indexOf(charsToPreserve);
-    if (index >= 0) {
-      this.charsToPreserve.splice(index, 1);
-    }
-
-    this.settingsForm.controls.charsToPreserve.setValue(this.charsToPreserve);
+  addSettingGroup(settingProp: string, propType: 'string' | 'number' | 'boolean', formGroup: FormGroup = this.settingsForm) {
+    this.propSettingsList.push({propName: settingProp, type: propType});
+    this.charsToPreservePerPropMap[settingProp] = this.currentSettings[settingProp]
+        ? this.currentSettings[settingProp].charsToPreserve
+        : [];
+    formGroup.addControl(settingProp, this.getSettingsGroup(propType, settingProp));
   }
 }
 
