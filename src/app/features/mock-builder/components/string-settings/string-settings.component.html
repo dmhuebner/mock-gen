@@ -28,7 +28,7 @@
     </header>
     <mat-form-field class="chars-to-preserve" *ngIf="settingsForm">
       <mat-chip-list #chipList aria-label="Characters to preserve" [disabled]="settingsForm.controls.readableSentences.value">
-        <mat-chip *ngFor="let charStr of charsToPreserveVal" [selectable]="true"
+        <mat-chip *ngFor="let charStr of charsToPreserve" [selectable]="true"
                   [removable]="true" (removed)="removeCharToPreserve(charStr)">
           {{charStr}}
           <mat-icon matChipRemove *ngIf="!settingsForm.controls.readableSentences.value">cancel</mat-icon>

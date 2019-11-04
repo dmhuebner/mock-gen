@@ -14,16 +14,24 @@ export class StringSettingsComponent implements OnInit {
   @Input() settingsForm: FormGroup;
   @Input() settingsName: string;
   @Input() settingsType: 'string' | 'number' | 'boolean';
-  @Input() charsToPreserve: string[];
+  @Input() charsToPreserve: string[] = [];
   @Output() changedCharsToPreserve: EventEmitter<CharsToPreserveMeta> = new EventEmitter<CharsToPreserveMeta>();
 
   readonly separatorKeysCodes: number[] = [ENTER];
-  charsToPreserveVal: string[];
 
   constructor() { }
 
   ngOnInit() {
-    this.charsToPreserveVal = this.settingsForm ? this.settingsForm.controls.charsToPreserve.value : [];
+    // Set charsToPreserve for prop setting if there is a settingsName
+    console.log('settingsForm', this.settingsForm);
+    if (this.settingsForm && this.settingsForm.controls[this.settingsName]) {
+      this.charsToPreserve = this.settingsForm.value[this.settingsName].charsToPreserve.value.slice();
+    } else if (this.settingsForm && this.settingsForm.controls.charsToPreserve.value) {
+      // Else Set charsToPreserve for global setting
+      this.charsToPreserve = this.settingsForm.controls.charsToPreserve.value.slice();
+    } else {
+      this.charsToPreserve = [];
+    }
   }
 
   addCharToPreserve(event: MatChipInputEvent): void {
@@ -35,7 +43,6 @@ export class StringSettingsComponent implements OnInit {
 
     if (value.trim()) {
       this.charsToPreserve.push(value.trim());
-      // this.settingsForm.controls.charsToPreserve.setValue(this.charsToPreserve);
       this.changedCharsToPreserve.emit({name: this.settingsName, charsToPreserve: this.charsToPreserve});
     }
 
@@ -50,8 +57,6 @@ export class StringSettingsComponent implements OnInit {
       this.charsToPreserve.splice(index, 1);
     }
 
-    // this.settingsForm.controls.charsToPreserve.setValue(this.charsToPreserve);
-    // TODO emit event and have parent setValue
     this.changedCharsToPreserve.emit({name: this.settingsName, charsToPreserve: this.charsToPreserve});
   }
 
