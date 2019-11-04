@@ -13,15 +13,6 @@
           </mg-mock-settings>
           <div class="prop-settings" *ngFor="let propSettings of propSettingsList">
             <h3>{{propSettings.propName + ' Settings:'}}</h3>
-<!--            <mg-mock-settings-->
-<!--                    *ngFor="let propSettings of propSettingsList"-->
-<!--                    [settingsHeader]="propSettings.propName + ' Settings:'"-->
-<!--                    [settingsName]="propSettings.propName"-->
-<!--                    [settingsForm]="settingsForm.controls[propSettings.propName]"-->
-<!--                    [charsToPreserve]="charsToPreservePerPropMap[propSettings.propName]"-->
-<!--                    [settingsType]="propSettings.type"-->
-<!--                    (changedCharsToPreserve)="onCharsToPreserveChanged($event)">-->
-<!--            </mg-mock-settings>-->
             <mg-string-settings
                     *ngIf="propSettings.type === 'string'"
                     [settingsName]="propSettings.propName"

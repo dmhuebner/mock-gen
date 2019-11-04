@@ -27,7 +27,6 @@ export class SettingsContainerComponent implements OnInit, OnDestroy {
   settingsForm: FormGroup;
   currentSettings: MockSettings;
   unsubscribe$ = new Subject();
-  // readonly separatorKeysCodes: number[] = [ENTER];
   charsToPreserve: string[] = [];
   charsToPreservePerPropMap: any = {};
   propSettingsList: PropSettingsRef[] = [];
