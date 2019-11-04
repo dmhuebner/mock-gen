@@ -78,7 +78,7 @@ export class SettingsContainerComponent implements OnInit, OnDestroy {
         group.addControl('propType', new FormControl('string', []));
         break;
       case 'number':
-        group = this.addNumberSettingsToGroup(group);
+        group = this.addNumberSettingsToGroup(group, settingPropName);
         group.addControl('propType', new FormControl('number', []));
         break;
       case 'boolean':
@@ -95,22 +95,28 @@ export class SettingsContainerComponent implements OnInit, OnDestroy {
   }
 
   addStringSettingsToGroup(group: FormGroup, settingPropName?: string): FormGroup {
-    group.addControl('readableSentences', new FormControl(this.currentSettings.readableSentences || false, []));
-    group.addControl('preserveLetterAndNumberTypes', new FormControl(
-        this.currentSettings ? this.currentSettings.preserveLetterAndNumberTypes : true, []
-      ));
-    let charsToPreserve;
+    let settings: MockSettings;
     if (settingPropName && this.currentSettings[settingPropName]) {
-      charsToPreserve = this.currentSettings[settingPropName].charsToPreserve;
+      settings = this.currentSettings[settingPropName];
     } else {
-      charsToPreserve = this.currentSettings.charsToPreserve;
+      settings = this.currentSettings;
     }
-    group.addControl('charsToPreserve', new FormControl(charsToPreserve || false, []));
+    group.addControl('readableSentences', new FormControl(settings.readableSentences || false, []));
+    group.addControl('preserveLetterAndNumberTypes', new FormControl(
+        settings ? settings.preserveLetterAndNumberTypes : true, []
+      ));
+    group.addControl('charsToPreserve', new FormControl(settings.charsToPreserve || false, []));
     return group;
   }
 
-  addNumberSettingsToGroup(group: FormGroup): FormGroup {
-    group.addControl('mockNumberUpToPlace', new FormControl(this.currentSettings.mockNumberUpToPlace || false, []));
+  addNumberSettingsToGroup(group: FormGroup, settingPropName?: string): FormGroup {
+    let settings: MockSettings;
+    if (settingPropName && this.currentSettings[settingPropName]) {
+      settings = this.currentSettings[settingPropName];
+    } else {
+      settings = this.currentSettings;
+    }
+    group.addControl('mockNumberUpToPlace', new FormControl(settings.mockNumberUpToPlace || false, []));
     return group;
   }
 
