@@ -8,17 +8,37 @@
           <mg-mock-settings
                   settingsHeader="Global Settings:"
                   [settingsForm]="settingsForm"
-                  [charsToPreserve]="charsToPreserve"
+                  [charsToPreserve]="charsToPreservePerPropMap.global"
                   (changedCharsToPreserve)="onCharsToPreserveChanged($event)">
           </mg-mock-settings>
-          <div class="prop-settings">
-            <mg-mock-settings
-                    *ngFor="let propName of propSettingsList"
-                    [settingsHeader]="propName + ' Settings:'"
-                    [settingsForm]="settingsForm.controls[propName]"
-                    [charsToPreserve]="charsToPreserve"
+          <div class="prop-settings" *ngFor="let propSettings of propSettingsList">
+            <h3>{{propSettings.propName + ' Settings:'}}</h3>
+<!--            <mg-mock-settings-->
+<!--                    *ngFor="let propSettings of propSettingsList"-->
+<!--                    [settingsHeader]="propSettings.propName + ' Settings:'"-->
+<!--                    [settingsName]="propSettings.propName"-->
+<!--                    [settingsForm]="settingsForm.controls[propSettings.propName]"-->
+<!--                    [charsToPreserve]="charsToPreservePerPropMap[propSettings.propName]"-->
+<!--                    [settingsType]="propSettings.type"-->
+<!--                    (changedCharsToPreserve)="onCharsToPreserveChanged($event)">-->
+<!--            </mg-mock-settings>-->
+            <mg-string-settings
+                    *ngIf="propSettings.type === 'string'"
+                    [settingsName]="propSettings.propName"
+                    [settingsForm]="settingsForm.controls[propSettings.propName]"
+                    [charsToPreserve]="charsToPreservePerPropMap[propSettings.propName]"
                     (changedCharsToPreserve)="onCharsToPreserveChanged($event)">
-            </mg-mock-settings>
+            </mg-string-settings>
+            <mg-number-settings
+                    *ngIf="propSettings.type === 'number'"
+                    [settingsName]="propSettings.propName"
+                    [settingsForm]="settingsForm.controls[propSettings.propName]">
+            </mg-number-settings>
+            <mg-boolean-settings
+                    *ngIf="propSettings.type === 'boolean'"
+                    [settingsName]="propSettings.propName"
+                    [settingsForm]="settingsForm.controls[propSettings.propName]">
+            </mg-boolean-settings>
           </div>
           <!--        <div class="control-buttons">-->
           <!--          <div class="right-btns">-->
@@ -26,14 +46,24 @@
             <mat-label>Property Name</mat-label>
             <input #propertyToAddName
                    matInput
-                   placeholder="foo or foo.bar"
+                   placeholder="foo, foo.bar"
                    name="property-name"/>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Property Type</mat-label>
+            <mat-select #propertyToAddType>
+              <mat-option *ngFor="let type of propertyTypes" [value]="type">
+                {{type}}
+              </mat-option>
+            </mat-select>
           </mat-form-field>
           <button mat-raised-button
                   class="add-property-settings"
                   color="secondary"
                   type="button"
-                  (click)="addSettingGroup(propertyToAddName.value)">
+                  (click)="addSettingGroup(propertyToAddName.value, propertyToAddType.value);
+                           propertyToAddName.value = '';
+                           propertyToAddType.value = ''">
             <mat-icon>add</mat-icon> Add Settings
           </button>
           <!--          </div>-->
