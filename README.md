@@ -39,3 +39,8 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 String settings charsToPreserve
  - Automatically sort list from longest to shortest before processing to make sure larger patterns are always found before a smaller pattern nullifies them
  - Allow user to enter foo.bar.some.thing . chains for custom property settings. Currently only allows one property deep.
+ - make header and footer in settings modal fixed
+ - styles for + Add Settings button
+ - Tool tips with examples for each setting
+ - Ability to delete a prop setting that you don't want
+ - Add settings for booleans (random || always true || always false)
