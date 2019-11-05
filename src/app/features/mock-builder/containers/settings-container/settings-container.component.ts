@@ -5,8 +5,6 @@ import { MockSettingsService } from '../../services/mock-settings.service';
 import MockSettings from '../../interfaces/mock-settings.interface';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { MatChipInputEvent } from '@angular/material/chips';
-import { ENTER } from '@angular/cdk/keycodes';
 import { CharsToPreserveMeta } from '../../interfaces/chars-to-preserve-meta.interface';
 
 const PROPERTY_TYPES = ['string', 'number', 'boolean'];
@@ -122,12 +120,8 @@ export class SettingsContainerComponent implements OnInit, OnDestroy {
 
   onCharsToPreserveChanged(updatedCharsMeta: CharsToPreserveMeta): void {
     if (updatedCharsMeta.name) {
-      if (updatedCharsMeta.name.indexOf('.') === -1) {
-        this.charsToPreservePerPropMap[updatedCharsMeta.name] = updatedCharsMeta.charsToPreserve;
-        this.settingsForm.controls[updatedCharsMeta.name].get('charsToPreserve').setValue(updatedCharsMeta.charsToPreserve);
-      } else {
-        // TODO drill into . value
-      }
+      this.charsToPreservePerPropMap[updatedCharsMeta.name] = updatedCharsMeta.charsToPreserve;
+      this.settingsForm.controls[updatedCharsMeta.name].get('charsToPreserve').setValue(updatedCharsMeta.charsToPreserve);
     } else {
       this.settingsForm.get('charsToPreserve').setValue(updatedCharsMeta.charsToPreserve);
     }
@@ -141,5 +135,4 @@ export class SettingsContainerComponent implements OnInit, OnDestroy {
     formGroup.addControl(settingProp, this.getSettingsGroup(propType, settingProp));
   }
 }
-
 
