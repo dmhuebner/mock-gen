@@ -36,7 +36,6 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 #### TODOs:
 
-- Allow user to enter foo.bar.some.thing . chains for custom property settings. Currently only allows one property deep.
 - make header and footer in settings modal fixed
 - styles for + Add Settings button
 - Tool tips with examples for each setting

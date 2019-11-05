@@ -10,7 +10,15 @@ export class MockBuilderService {
 
   constructor() { }
 
-  buildMock(originalObj: object, settings: MockSettings): object {
+  /* buildMock
+  * @description - Entry point to mock an object
+  * @param: originalObj: object - The original object you want to mock
+  * @param: settings: MockSettings - The settings you want to use to mock the object
+  * @param: parentObjChainRef: string - Used to keep track of the parent object chain if called recursively.
+  *                                     Should not be used unless called recursively.
+  * @return: A mocked object per the settings argument
+  * */
+  buildMock(originalObj: object, settings: MockSettings, parentObjChainRef: string = ''): object {
     const mockedObject = {};
     const objIsArray = originalObj instanceof Array;
 
@@ -19,7 +27,9 @@ export class MockBuilderService {
       if (originalObj.hasOwnProperty(prop)) {
         /* If a prop is an object call this recursively */
         if (typeof(originalObj[prop]) !== 'object') {
-          const settingsToUse = settings[prop] || settings;
+          /* Determine which settings to use when mocking */
+          const settingsKey = parentObjChainRef ? `${parentObjChainRef}.${prop}` : prop;
+          const settingsToUse = settings[settingsKey] || settings;
           /* Check value type and limits while building mockedObject */
           switch (typeof(originalObj[prop])) {
             case 'string':
@@ -35,8 +45,14 @@ export class MockBuilderService {
               mockedObject[prop] = 'COULD_NOT_MOCK';
           }
         } else {
-          /* If the value is an object, call recursively */
-          mockedObject[prop] = this.buildMock(originalObj[prop], settings);
+          /* If the value is an object, Update the parentObjChainRef to keep track of parent object chain ('foo.bar.stuff') */
+          if (parentObjChainRef.indexOf('.') !== -1) {
+            parentObjChainRef += `.${prop}`;
+          } else {
+            parentObjChainRef += prop;
+          }
+          /* call recursively */
+          mockedObject[prop] = this.buildMock(originalObj[prop], settings, parentObjChainRef);
         }
       }
     }
@@ -54,10 +70,7 @@ export class MockBuilderService {
 
   processString(inputString: string, mockSettings: MockSettings) {
     /* Check if its a date */
-    if (inputString.length > 5 &&
-        inputString.indexOf(':') !== -1 &&
-        !isNaN(new Date(inputString).getTime()) &&
-        inputString.toLowerCase().indexOf('http') === -1) {
+    if (this.getStringDateConditions(inputString)) {
       return faker.date.past().toISOString();
     /* Check if its a guid */
     } else if (inputString.match(/([a-f\d]{8}(-[a-f\d]{4}){3}-[a-f\d]{12}?)/i)) {
@@ -151,17 +164,17 @@ export class MockBuilderService {
   private mockStringWithPreservedChars(stringToMock: string, mockSettings: MockSettings): string {
     /* Automatically preserve ' ' to maintain spaces in sentences */
     const charsToPreserveUnderTheHood = [' '];
-    let charsToPreserveIndexMap: PatternIndexMap[] = [];
-    let strippedString = stringToMock;
     /* include charsToPreserveUnderTheHood in the charsToPreserve */
     const charsToPreserve = mockSettings.charsToPreserve ?
         [...mockSettings.charsToPreserve, ...charsToPreserveUnderTheHood] :
         [...charsToPreserveUnderTheHood];
-
     /* Sort array to make sure larger string patterns are found first.
        This ensures that if charsToPreserve = ['/', 'http://'] { the larger http:// pattern would be marked to be preserved first
        so that both http:// and single / are preserved } */
     const sortedCharsToPreserve = this.sortArrayByStringLength(charsToPreserve);
+    /* A list of objects that contain a pattern property and a list of indexes where that pattern is found in a string */
+    let charsToPreserveIndexMap: PatternIndexMap[] = [];
+    let strippedString = stringToMock;
 
     /* Iterate through each pattern, find all indexes of it in the string, and strip it from the string */
     sortedCharsToPreserve.forEach(pattern => {
@@ -191,9 +204,17 @@ export class MockBuilderService {
     });
   }
 
+  private getStringDateConditions(inputString: string) {
+    return (inputString.length > 5 &&
+    inputString.indexOf(':') !== -1 &&
+    !isNaN(new Date(inputString).getTime()) &&
+    inputString.toLowerCase().indexOf('http') === -1);
+  }
+
 }
 
 /* IndexMapObject Interface
+* @description - An object with a pattern property and indexList; Used to keep track of where a given pattern appears in a string
 * pattern - the pattern we want to keep track of in the string
 * indexList - A list of indexes where the pattern appears in the string
 * */
