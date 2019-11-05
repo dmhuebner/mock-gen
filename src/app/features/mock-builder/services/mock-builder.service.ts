@@ -14,13 +14,13 @@ export class MockBuilderService {
     const mockedObject = {};
     const objIsArray = originalObj instanceof Array;
 
-    // Loop through each key in the object
+    /* Loop through each key in the object */
     for (const prop in originalObj) {
       if (originalObj.hasOwnProperty(prop)) {
-        // If a prop is an object call this recursively
+        /* If a prop is an object call this recursively */
         if (typeof(originalObj[prop]) !== 'object') {
           const settingsToUse = settings[prop] || settings;
-          // Check value type and limits while building mockedObject
+          /* Check value type and limits while building mockedObject */
           switch (typeof(originalObj[prop])) {
             case 'string':
               mockedObject[prop] = this.processString(originalObj[prop], settingsToUse);
@@ -35,12 +35,12 @@ export class MockBuilderService {
               mockedObject[prop] = 'COULD_NOT_MOCK';
           }
         } else {
-          // If the value is an object, call recursively
+          /* If the value is an object, call recursively */
           mockedObject[prop] = this.buildMock(originalObj[prop], settings);
         }
       }
     }
-    // Check if the obj passed in was an Array or Object and return Mock
+    /* Check if the obj passed in was an Array or Object and return Mock */
     return objIsArray ? Object.values(mockedObject) : mockedObject;
   }
 
@@ -53,16 +53,16 @@ export class MockBuilderService {
   }
 
   processString(inputString: string, mockSettings: MockSettings) {
-    // Check if its a date
+    /* Check if its a date */
     if (inputString.length > 5 &&
         inputString.indexOf(':') !== -1 &&
         !isNaN(new Date(inputString).getTime()) &&
         inputString.toLowerCase().indexOf('http') === -1) {
       return faker.date.past().toISOString();
-    // Check if its a guid
+    /* Check if its a guid */
     } else if (inputString.match(/([a-f\d]{8}(-[a-f\d]{4}){3}-[a-f\d]{12}?)/i)) {
       return faker.random.uuid();
-    // else its a word or sentence
+    /* else its a word or sentence */
     } else {
       return this.mockString(inputString, mockSettings);
     }
@@ -112,7 +112,7 @@ export class MockBuilderService {
     indexMap = indexMap || [];
     let index = stringToSearch.indexOf(pattern);
     let patternRefObj = indexMap.find(obj => obj.pattern === pattern);
-    // Add a patternRefObject to pattern indexMap if it doesn't have one for the pattern
+    /* Add a patternRefObject to pattern indexMap if it doesn't have one for the pattern */
     if (!patternRefObj) {
       patternRefObj = {pattern, indexList: []};
       indexMap.push(patternRefObj);
@@ -149,17 +149,22 @@ export class MockBuilderService {
   }
 
   private mockStringWithPreservedChars(stringToMock: string, mockSettings: MockSettings): string {
-    // Automatically preserve ' '
+    /* Automatically preserve ' ' to maintain spaces in sentences */
     const charsToPreserveUnderTheHood = [' '];
     let charsToPreserveIndexMap: PatternIndexMap[] = [];
     let strippedString = stringToMock;
-    // include ' ' in the charsToPreserve to maintain spaces in sentences
+    /* include charsToPreserveUnderTheHood in the charsToPreserve */
     const charsToPreserve = mockSettings.charsToPreserve ?
         [...mockSettings.charsToPreserve, ...charsToPreserveUnderTheHood] :
         [...charsToPreserveUnderTheHood];
 
-    // Iterate through each pattern, find all indexes of it in the string, and strip it from the string
-    charsToPreserve.forEach(pattern => {
+    /* Sort array to make sure larger string patterns are found first.
+       This ensures that if charsToPreserve = ['/', 'http://'] { the larger http:// pattern would be marked to be preserved first
+       so that both http:// and single / are preserved } */
+    const sortedCharsToPreserve = this.sortArrayByStringLength(charsToPreserve);
+
+    /* Iterate through each pattern, find all indexes of it in the string, and strip it from the string */
+    sortedCharsToPreserve.forEach(pattern => {
       const indexMapObj = this.getAllIndexOfPattern(strippedString, pattern, charsToPreserveIndexMap);
       charsToPreserveIndexMap = indexMapObj.patternIndexMap;
       strippedString = indexMapObj.strippedString;
@@ -168,10 +173,22 @@ export class MockBuilderService {
     return this.reconstructStringWithChars(mockedStrippedString, charsToPreserveIndexMap);
   }
 
-  // Breaks down and mocks a string while preserving any breaking characters that you want to preserve (good for sentences or paths)
+  /* Breaks down and mocks a string while preserving any breaking characters that you want to preserve (good for sentences or paths) */
   private rebuildStringWithBreaks(inputString: string, breakingChar: string, mockSettings: MockSettings): string {
     const stringArray = inputString.split(breakingChar);
     return stringArray.map(word => this.stringMockingHandler(word, mockSettings)).join(breakingChar);
+  }
+
+  private sortArrayByStringLength(charsToPreserve: string[]): string[] {
+    return charsToPreserve.sort((a, b) => {
+      if (a.length < b.length) {
+        return 1;
+      }
+      if (a.length > b.length) {
+        return -1;
+      }
+      return 0;
+    });
   }
 
 }
