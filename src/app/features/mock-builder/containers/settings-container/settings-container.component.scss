@@ -1,16 +1,36 @@
 .settings-container {
   max-width: 50rem;
   max-height: 80vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 
-  .general-settings {
+  .dialog-header {
+    max-height: 10%;
+  }
+
+  form {
     overflow: scroll;
+  }
 
-    .prop-settings {
-      margin-left: 1rem;
+  .dialog-body {
+    max-height: 80%;
+    box-shadow: 0 0 4px 1px #eee inset;
+    padding: 0.8rem;
+
+    .general-settings {
+      .prop-settings {
+        margin-left: 1rem;
+      }
     }
   }
 
   .dialog-footer {
+    margin: 0.7rem;
+
+    .submit-btn mat-icon {
+      color: #008b1e;
+    }
   }
 
   //.control-buttons {

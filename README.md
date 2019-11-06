@@ -36,8 +36,10 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 #### TODOs:
 
-- make header and footer in settings modal fixed
 - styles for + Add Settings button
 - Tool tips with examples for each setting
 - Ability to delete a prop setting that you don't want
 - Add settings for booleans (random || always true || always false)
+- Add feature to randomize a custom enum that the user creates for a prop. For example, they could choose to have a certain field randomized between certain options they give it
+- Allow user to select an object to add a setting to (that includes all setting types)
+- make footer in settings modal fixed?
