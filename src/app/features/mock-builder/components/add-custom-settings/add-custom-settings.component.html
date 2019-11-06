@@ -1,0 +1,29 @@
+<div class="add-settings-container">
+  <mat-form-field>
+    <mat-label>Property Name</mat-label>
+    <input #propertyToAddName
+           matInput
+           placeholder="foo, foo.bar"
+           name="property-name"/>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Property Type</mat-label>
+    <mat-select #propertyToAddType>
+      <mat-option *ngFor="let type of propertyTypes" [value]="type">
+        {{type | titlecase}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <div class="controls">
+    <button mat-raised-button
+            class="add-property-settings"
+            color="secondary"
+            type="button"
+            (click)="addSettingGroup(propertyToAddName.value, propertyToAddType.value);
+                         propertyToAddName.value = '';
+                         propertyToAddType.value = ''">
+      <mat-icon>add</mat-icon> Add Settings
+    </button>
+  </div>
+
+</div>

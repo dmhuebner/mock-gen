@@ -16,6 +16,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { StringSettingsComponent } from './components/string-settings/string-settings.component';
 import { NumberSettingsComponent } from './components/number-settings/number-settings.component';
 import { BooleanSettingsComponent } from './components/boolean-settings/boolean-settings.component';
+import { AddCustomSettingsComponent } from './components/add-custom-settings/add-custom-settings.component';
 
 const DECLARATIONS = [
     MockBuilderContainerComponent,
@@ -23,7 +24,8 @@ const DECLARATIONS = [
     MockSettingsComponent,
     StringSettingsComponent,
     NumberSettingsComponent,
-    BooleanSettingsComponent
+    BooleanSettingsComponent,
+    AddCustomSettingsComponent
 ];
 
 const MATERIAL_MODULES = [

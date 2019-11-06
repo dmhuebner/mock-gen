@@ -6,12 +6,11 @@ import MockSettings from '../../interfaces/mock-settings.interface';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { CharsToPreserveMeta } from '../../interfaces/chars-to-preserve-meta.interface';
-
-const PROPERTY_TYPES = ['string', 'number', 'boolean'];
+import { PropertyType } from '../../interfaces/property-type.interface';
 
 interface PropSettingsRef {
   propName: string;
-  type: 'string' | 'number' | 'boolean';
+  type: PropertyType;
 }
 
 @Component({
@@ -21,7 +20,6 @@ interface PropSettingsRef {
 })
 export class SettingsContainerComponent implements OnInit, OnDestroy {
 
-  propertyTypes = PROPERTY_TYPES;
   settingsForm: FormGroup;
   currentSettings: MockSettings;
   unsubscribe$ = new Subject();
@@ -67,7 +65,7 @@ export class SettingsContainerComponent implements OnInit, OnDestroy {
     this.dialogRef.close();
   }
 
-  getSettingsGroup(type?: 'string' | 'number' | 'boolean', settingPropName?: string): FormGroup {
+  getSettingsGroup(type?: PropertyType, settingPropName?: string): FormGroup {
     let group = this.fb.group({});
 
     switch (type) {
@@ -127,7 +125,7 @@ export class SettingsContainerComponent implements OnInit, OnDestroy {
     }
   }
 
-  addSettingGroup(settingProp: string, propType: 'string' | 'number' | 'boolean', formGroup: FormGroup = this.settingsForm) {
+  addSettingGroup(settingProp: string, propType: PropertyType, formGroup: FormGroup = this.settingsForm) {
     this.propSettingsList.push({propName: settingProp, type: propType});
     this.charsToPreservePerPropMap[settingProp] = this.currentSettings[settingProp]
         ? this.currentSettings[settingProp].charsToPreserve
