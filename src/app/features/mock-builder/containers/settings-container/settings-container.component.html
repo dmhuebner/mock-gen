@@ -14,49 +14,31 @@
         <div class="prop-settings" *ngFor="let propSettings of propSettingsList">
           <h3>{{propSettings.propName + ' Settings:'}}</h3>
           <mg-string-settings
-                  *ngIf="propSettings.type === 'string'"
+                  *ngIf="propSettings.type.toLowerCase() === 'string'"
                   [settingsName]="propSettings.propName"
                   [settingsForm]="settingsForm.controls[propSettings.propName]"
                   [charsToPreserve]="charsToPreservePerPropMap[propSettings.propName]"
                   (changedCharsToPreserve)="onCharsToPreserveChanged($event)">
           </mg-string-settings>
           <mg-number-settings
-                  *ngIf="propSettings.type === 'number'"
+                  *ngIf="propSettings.type.toLowerCase() === 'number'"
                   [settingsName]="propSettings.propName"
                   [settingsForm]="settingsForm.controls[propSettings.propName]">
           </mg-number-settings>
           <mg-boolean-settings
-                  *ngIf="propSettings.type === 'boolean'"
+                  *ngIf="propSettings.type.toLowerCase() === 'boolean'"
                   [settingsName]="propSettings.propName"
                   [settingsForm]="settingsForm.controls[propSettings.propName]">
           </mg-boolean-settings>
         </div>
         <!--        <div class="control-buttons">-->
         <!--          <div class="right-btns">-->
-        <mat-form-field>
-          <mat-label>Property Name</mat-label>
-          <input #propertyToAddName
-                 matInput
-                 placeholder="foo, foo.bar"
-                 name="property-name"/>
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>Property Type</mat-label>
-          <mat-select #propertyToAddType>
-            <mat-option *ngFor="let type of propertyTypes" [value]="type">
-              {{type}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-        <button mat-raised-button
-                class="add-property-settings"
-                color="secondary"
-                type="button"
-                (click)="addSettingGroup(propertyToAddName.value, propertyToAddType.value);
-                         propertyToAddName.value = '';
-                         propertyToAddType.value = ''">
-          <mat-icon>add</mat-icon> Add Settings
-        </button>
+        <div class="custom-settings-controls">
+          <h4>Add Custom Settings for Properties</h4>
+          <mg-add-custom-settings
+                  (settingAdded)="addSettingGroup($event.propName, $event.propType)">
+          </mg-add-custom-settings>
+        </div>
         <!--          </div>-->
         <!--        </div>-->
       </section>
